@@ -2,7 +2,9 @@
 PI_Ivy.py by Kristian Ambrosch
 
 This is Ivy, your new co-pilot. 
-Gone are the days, when you could fly without transponder, enlight the stratosphere with your landing lights and transform the passenger's meal in pottery to pottery in passenger meal upon landing, without anone complaining.
+
+Gone are the days, when you could fly without transponder, enlighten the stratosphere with your landing lights and transform the passenger's meal in pottery to pottery in passenger meal upon landing, without anyone complaining.
+
 Now that your airline has assigned your new co-pilot no mistake will go unnoticed. So make sure that you fly properly!
 
 Installation:
@@ -23,7 +25,7 @@ http://www.xpluginsdk.org/python_interface.htm
 Pygame can be installed via Python:
 https://www.pygame.org/wiki/GettingStarted
 
-Personally, I use the following commands to install pygame. Remember to set your environment variables, to that python can be started from anywere:
+Personally, I use the following commands to install pygame. Remember to set your environment variables, so that python can be started from anywhere:
 python -m ensurepip
 python -m ensurepip --upgrade
 pip install wheel
@@ -31,52 +33,52 @@ pip install wheel --upgrade
 python -m pip install --upgrade pip
 python -m pip install -U pygame --user
 
-If you need support installing pygame or python interface, please refer to the pygame or x-plane community. I am no expert at that.
+If you need support installing pygame or python interface, please refer to the pygame or x-plane community. 
 
 Implemented Failure Detections:
 
 
-Bump on the ground
-Tire blown
-Hard braking
-Transponder not active when airborne
-Landing lights not on when close to the ground in the night
-Landing lights not off on high altitude
-Beacon lights not on when taxiing
-Nav lights lights not on when airborne
-Strobes not on when airborne
-Battery low
-Engine fire
-Engine flameout
-Engine ground failure
-Engine airborne failure
-Engine hot start
-Battery not on
-Cabin pressure falling fast
-Cabin pressure falling rapidely
-Bank angle pre-warning
-Bank angle too high
-Bank angle extremely high
-Pitch down pre-warning
-Pitch too low
-Vertical G Force high
-Vertical G Force very high
-Vertical G Force very, very high
-Vertical G Force too low
-Vertical G Force negative
-Barometric pressure not set accordingly while close to ground or taxiing (within tolerance)
-Barometric pressure not set to standard above transition altitude
-Ice airframe low
-Ice airframe high
-Ice pitot low
-Ice pitot high
-Ice propeller low
-Ice propeller high
-Ice cockpit window low
-Ice cockpit window high
-Cabin pressure low
-Cabin pressure too low to breath
-Birdstrike
+1.	Bump on the ground
+2.	Tire blown
+3.	Hard braking
+4.	Transponder not active when airborne
+5.	Landing lights not on when close to the ground in the night
+6.	Landing lights not off on high altitude
+7.	Beacon lights not on when taxiing
+8.	Nav lights not on when airborne
+9.	Strobes not on when airborne
+10.	Battery low
+11.	Engine fire
+12.	Engine flameout
+13.	Engine ground failure
+14.	Engine airborne failure
+15.	Engine hot start
+16.	Battery not on
+17.	Cabin pressure raising too fast
+18.	Cabin pressure raising extremely rapidly
+19.	Bank angle pre-warning
+20.	Bank angle too high
+21.	Bank angle extremely high
+22.	Pitch down pre-warning
+23.	Pitch too low
+24.	Vertical G Force high
+25.	Vertical G Force very high
+26.	Vertical G Force very, very high
+27.	Vertical G Force too low
+28.	Vertical G Force negative
+29.	Barometric pressure not set accordingly while close to ground or taxiing (within tolerance)
+30.	Barometric pressure not set to standard above transition altitude
+31.	Ice airframe low
+32.	Ice airframe high
+33.	Ice pitot low
+34.	Ice pitot high
+35.	Ice propeller low
+36.	Ice propeller high
+37.	Ice cockpit window low
+38.	Ice cockpit window high
+39.	Cabin pressure low
+40.	Cabin pressure too low to breath
+41.	Birdstrike
 
 Most variables needed to configure the tolerances of failure detection are editable in the Ivy.ini file.
 
@@ -88,40 +90,34 @@ if the g-forces upon landing are too high.
 No matter what your vertical speed was.
 
 Or to put it in other words: 
-A friend of my father was once happy like a little kid, because upon short runway on a greek island (I think it was Mykonos), 
-he put his MD-80 with force to the ground (to ensure a no-flare situation), which resulted in serious pain in his back,
-broken ceramics of the passenger meals they had for their return flight, 
-but the technician said after checking his data: "No, this was not a hard landing."
+A friend of my father was once happy like a little kid, because upon short runway on a greek island (I think it was Mykonos), he put his MD-80 with force to the ground (to ensure a no-flare situation), which resulted in serious pain in his back, broken ceramics of the passenger meals they had for their return flight, but the technician said after checking his data: "No, this was not a hard landing."
 
 Well, the passengers might have other constraints than your technicians. Hence, the rating is the following:
 
-Rating 1:
-Sink rate < 100 ft/min
-Vertical forces < 1.5g
+Rating A:
+	Sink rate < 100 ft/min
+	Vertical forces < 1.5g
+Rating B:
+	Sink rate < 250 ft/min
+	Vertical forces < 2g
+Rating C:
+	Sink rate < 400 ft/min
+	Vertical forces < 3g
+Rating D:
+	Sink rate < 500 ft/min
+	Vertical forces < 4g
 
-Rating 2:
-Sink rate < 250 ft/min
-Vertical forces < 2g
-
-Rating 3:
-Sink rate < 400 ft/min
-Vertical forces < 3g
-
-Rating 4:
-Sink rate < 500 ft/min
-Vertical forces < 4g
-
-Rating 5:
-Every thing else that did not trigger the X-Plane crash detection
+Rating F:
+	Everything else that did not trigger the X-Plane crash detection
 
 A proper landing requires you to touch down more than 5 seconds. 
-The rating includes all bounces within a 10 seconds window before your final touch down.
+The rating includes all bounces within a 10 seconds window before your final touchdown.
 
 Rating of your flight, depending on the errors you made:
-0 	Errors: Excellent
-<5 	Errors: Good (nice)
-<10 Errors: Bad
->=10	  : Horrible
+0 		Errors	: Excellent
+<5 		Errors	: Good (nice)
+<10 		Errors	: Bad
+>=10	  	Errors	: Horrible
 
 Details of your highest sink rate and vertical g-forces are spoken upon landing (including all bounces in the evaluation)
 
@@ -129,24 +125,27 @@ Every landing is stored in your IvyLogbook.
 
 
 Implemented callouts for all aircraft:
-Gear down callout
-Gear up callout
-60 knots callout
-Positive rate of climb
-Fasten Seatbelts
-Take Off Announcement on Non-Smoking Toogle or Commmand
-Landing Announcement on Non-Smoking Toogle or Commmand
+1.	Gear down callout (default: 100ft/min)
+2.	Gear up callout
+3.	60 knots callout (need to be compatible with smaller aircraft)
+4.	Positive rate of climb
+5.	Approaching Minimums (default: DH+100, DH must not be zero)
+6.	Fasten Seatbelts
+7.	Take Off Announcement on Non-Smoking Toogle or Commmand
+8.	Landing Announcement on Non-Smoking Toogle or Commmand
+
+Remember that Ivy is a Union member and will only perform one take off and one landing announcement per flight. However, she might consider doing it on multi-leg flights.
 
 Implemented callouts for specific aircrafts:
-V-Speeds:
+- V-Speeds:
 - V1
 - VR
 - V2
 - V2 not achieved within 5 seconds after take off
-Flaps settings
-Slats settings
+- Flaps settings
+- Slats settings
 
-I supply multiple aircraft configuration files, but I can only implement and test them for airfract I own:
+I supply multiple aircraft configuration files, but I can only implement and test them for aircraft I own. V-Speeds are currently available for CL 300 and Rotate MD-80. Unfortunately, CRJ-200 does not provide V-Speeds as datarefs.
 - Standard MD-80
 - Baron B58
 - Cessna 172 SP Skyhawk
@@ -163,25 +162,35 @@ I supply multiple aircraft configuration files, but I can only implement and tes
 - Standard B747-400
 - ERJ-140
 
-You can can open the data for slats and flaps positions via menu or command and create your own configuration file if you like.
+You can open the data for slats and flaps positions via menu or command and create your own configuration file if you like
+Commands
+The following commands can be bound to your keyboard:
+- Ivy/cabin_announcement: Ivy will make a Take-Off or Landing announcement.
+- Ivy/say_baro: Say the current barometric pressure
+- Ivy/say_wind: Say wind direction and speed 
+- Ivy/show_output: Show the flaps/slats position for creating IvyAircraft_X.ini
+- Ivy/reset_ivy: Resets Ivy. Recommended for multi leg flights.
 
 Loogbook
-
 Ivy remembers everything! She keeps precise tracking of all your mistakes and landings, noting every detail in your logbook. At least, most of it. You can open your loogbook in the plugins menu.
 
 What else is there to say?
 
-Remember that fun is subjective. If you don't like certain call outs, you can simply remove the individual mp3 file. No need to renumber the sound files, Ivy is not that picky. If you don't like any of the call outs, well, go write your own plugin.
+Remember that fun is subjective. If you don't like certain call outs, you can simply remove the individual mp3 file. No need to renumber the sound files, Ivy is not that picky. If you don't like the plug-in at all, go write your own.
 
-All speech was generated using the Amazon Polly Text-to-Speech synthesis engine. Any other sounds were taken from freesound.org, where all chosed sounds were using the creative commons 0 license. 
+All speech was generated using the Amazon Polly Text-to-Speech synthesis engine. You may generate your own sound files, if you want more proper call outs. You just need an AWS account, which is currently free of charge or any other speech synthesis software. However, I hereby deny the use of any speech that contains sexism, racism or fascism (there are always some idiots out there). 
 
-This software is published under the GNU General Public License v3. Remember that this gives you no warranty for functionality.
+Amazon offers a variety of voices and it is definitely on my ToDo list to generate different voice packs. Ivy is just the most funny voice that I decided to start with.
 
-This software was not written by a professional pilot. It does not follow any real life procedures and is not safe for flight training. If you caused a fatal crash, because you followed Ivy's suggestions, we might consider your nomination for the darwin award.
+Any other sounds were taken from freesound.org, where all chosen sounds were using the creative commons 0 license. One sound was taken from GNU GPL licensed software (WeakAuras).
+
+This software is published under the GNU General Public License v3. Remember that this gives you no warranty for functionality and by using this software, you yourself take the full responsibility for any fatalities caused by any bugs.
+
+This software was not written by a professional pilot. It does not follow any real life procedures and is not safe for flight training. If you cause a fatal crash, because you followed Ivy's suggestions, we might consider your nomination for the Darwin Award.
 
 Many animals were hurt during the creation of this product. Deere were hit on the runway, birds were soaked into the engine. Most of them are better now. Even though the turkey was too well done. 
-Not all virtual pilots yet recovered from the injuresies of countless crashes that were used to train Ivy's supervision talents. However, as freeware does not produce any income, we cannot afford to pay them a doctor. Yes, you should feel bad about that!
 
+Not all virtual pilots yet recovered from the injuries of countless crashes that were used to train Ivy's supervision talents. However, as freeware does not produce any income, we cannot afford to pay them a doctor. Yes, you should feel bad about that! 
 
 
 '''
@@ -479,9 +488,16 @@ class MyIvyConfiguration(object):
 			self.cab_press_low 				= 13000
 			self.cab_press_high 			= 20000
 			
-			# New
-			
 			self.non_smoking_annoucetime    = 3
+			self.decition_height_arm		= 500
+			self.decition_height_plus		= 100
+			
+			self.log_window_pos_x			= 300
+			self.log_window_pos_y			= 550
+			self.log_window_height			= 350
+			self.log_window_width			= 1300
+			self.log_window_entries			= 15
+			self.log_afc_name_length		= 40
 			
 			
 		pass
@@ -521,6 +537,16 @@ class MyIvyConfiguration(object):
 			config.set("IVY_SETTINGS","ice_high",str(self.ice_high))
 			config.set("IVY_SETTINGS","cab_press_low",str(self.cab_press_low))
 			config.set("IVY_SETTINGS","cab_press_high",str(self.cab_press_high))
+			config.set("IVY_SETTINGS","non_smoking_annoucetime",str(self.non_smoking_annoucetime))
+			config.set("IVY_SETTINGS","decition_height_arm",str(self.decition_height_arm))
+			config.set("IVY_SETTINGS","decition_height_plus",str(self.decition_height_plus))
+			
+			config.set("IVY_SETTINGS","log_window_pos_x",str(self.log_window_pos_x))
+			config.set("IVY_SETTINGS","log_window_pos_y",str(self.log_window_pos_y))
+			config.set("IVY_SETTINGS","log_window_height",str(self.log_window_height))
+			config.set("IVY_SETTINGS","log_window_width",str(self.log_window_width))
+			config.set("IVY_SETTINGS","log_window_entries",str(self.log_window_entries))
+			config.set("IVY_SETTINGS","log_afc_name_length",str(self.log_afc_name_length))
 			
 			with open(self.ini_path , 'wb') as configfile: config.write(configfile)
 				
@@ -598,6 +624,28 @@ class MyIvyConfiguration(object):
 			except:	pass
 			try:	self.cab_press_high 			= config.getfloat("IVY_SETTINGS","cab_press_high")
 			except:	pass
+			
+			try:	self.non_smoking_annoucetime 	= config.getfloat("IVY_SETTINGS","non_smoking_annoucetime")
+			except:	pass
+			
+			try:	self.decition_height_arm 		= config.getfloat("IVY_SETTINGS","decition_height_arm")
+			except:	pass
+			try:	self.decition_height_plus 		= config.getfloat("IVY_SETTINGS","decition_height_plus")
+			except:	pass
+			
+			try:	self.log_window_pos_x 			= config.getfloat("IVY_SETTINGS","log_window_pos_x")
+			except:	pass
+			try:	self.log_window_pos_y 			= config.getfloat("IVY_SETTINGS","log_window_pos_y")
+			except:	pass
+			try:	self.log_window_height 			= config.getfloat("IVY_SETTINGS","log_window_height")
+			except:	pass
+			try:	self.log_window_width 			= config.getfloat("IVY_SETTINGS","log_window_width")
+			except:	pass
+			try:	self.log_window_entries 		= config.getfloat("IVY_SETTINGS","log_window_entries")
+			except:	pass
+			try:	self.log_afc_name_length 		= config.getfloat("IVY_SETTINGS","log_afc_name_length")
+			except:	pass
+			
 			
 			
 			
@@ -678,7 +726,8 @@ class MyIvyResponse(object):
 		
 	def Play(self):
 		if (len(self.play_files) == 0):
-			return 0
+			self.played = 1
+			return 1
 
 		if ((self.queue_output == 0) and (pygame.mixer.music.get_busy() == True)):
 			return 0
@@ -801,7 +850,7 @@ class PythonInterface:
 
 		self.Name = "Ivy"
 		self.Sig =  "ka.Python.Ivy"
-		self.Desc = "My nuding Co-Pilot"
+		self.Desc = "The nagging Co-Pilot"
 		
 		self.play_mp3_queue = []
 		self.ivy_object_list = []
@@ -817,7 +866,8 @@ class PythonInterface:
 
 		
 		self.no_aircraft = True 
-		self.draw_window = 1
+		self.draw_window = 0
+		self.logbook_index = 0
 		
 		self.ivyConfig = MyIvyConfiguration()
 		self.ivyConfig.ReadConfig()
@@ -933,6 +983,11 @@ class PythonInterface:
 		self.ivyAnnounceLanding = 		MyIvyResponse(	"landing", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
 		
 		self.ivySeatBelts = 			MyIvyResponse(	"seatbelts", 				self.ivyConfig.mp3_path,	0,				1, 						0, 						0,					self.ivy_object_list)
+		
+		self.ivyMinimums = 				MyIvyResponse(	"minimums", 				self.ivyConfig.mp3_path,	0,				1, 						10, 					0,					self.ivy_object_list)
+		
+		# No Callout Events
+		self.ivyArmMinimums = 			MyIvyResponse(	"arm_descent", 				self.ivyConfig.mp3_path,	0,				1, 						10, 					0,					self.ivy_object_list)
 			
 	
 		#self.ivy = 		MyIvyResponse(	"landing_lights", 		self.ivyConfig.mp3_path,	0,			0, 						0, 						0,					self.ivy_object_list)
@@ -1005,7 +1060,8 @@ class PythonInterface:
 		XPLMAppendMenuItem(self.MenuId, "Make Announcement", 2, 1)
 		XPLMAppendMenuItem(self.MenuId, "Barometric Pressure", 3, 1)
 		XPLMAppendMenuItem(self.MenuId, "Wind Situtation", 4, 1)
-		XPLMAppendMenuItem(self.MenuId, "Reset Ivy", 5, 1)
+		XPLMAppendMenuItem(self.MenuId, "Show Output", 5, 1)
+		XPLMAppendMenuItem(self.MenuId, "Reset Ivy", 6, 1)
 		
 		# Flag to tell us if theLogbook is shown
 		self.MenuLogbookShow = 0
@@ -1040,6 +1096,7 @@ class PythonInterface:
 		self.i_taxi_lights = 			XPLMFindDataRef("sim/cockpit/electrical/taxi_light_on")
 		self.i_cockpit_lights = 		XPLMFindDataRef("sim/cockpit/electrical/cockpit_lights_on")
 		self.f_radio_alt = 				XPLMFindDataRef("sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_pilot")
+		self.f_decision_height = 		XPLMFindDataRef("sim/cockpit/misc/radio_altimeter_minimum")
 		self.f8_batter_charge = 		XPLMFindDataRef("sim/cockpit/electrical/battery_charge_watt_hr")
 		self.i_battery_on = 			XPLMFindDataRef("sim/cockpit/electrical/battery_on")
 		self.i_gpu_on = 				XPLMFindDataRef("sim/cockpit/electrical/gpu_on")
@@ -1176,7 +1233,7 @@ class PythonInterface:
 		XPSetWidgetProperty(self.LogbookWidget, xpProperty_MainWindowHasCloseBoxes, 1)
 		logbookstring = "test1; test2\n\r test3"
 		
-		self.logbook_lines = 15
+		self.logbook_lines = int(self.ivyConfig.log_window_entries)
 		self.logbook_index = 0
 		self.text_field_array = []
 		self.logbook_entries = []
@@ -1185,12 +1242,11 @@ class PythonInterface:
 		self.logbook_entries = logbook_file.readlines()
 		logbook_file.close()
 		
-		
 		self.LogbookScrollBar = XPCreateWidget(x2-10, y-20, x2-5, y2, 1,	"",	0, self.LogbookWidget, xpWidgetClass_ScrollBar)
 		XPSetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarMin, 0)
-		XPSetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarMax, len(self.logbook_entries))
+		XPSetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarMax, max(len(self.logbook_entries)+2, 0))
 		XPSetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarPageAmount, self.logbook_lines)
-		XPSetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarSliderPosition, len(self.logbook_entries))
+		XPSetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarSliderPosition, min(self.logbook_lines,len(self.logbook_entries))) # Set page to show last flight max(len(self.logbook_entries), self.logbook_lines)
 		
 		self.IvyScrollbarHandlerCB = self.IvyLogbookScrollHandler
 		XPAddWidgetCallback(self, self.LogbookScrollBar, self.IvyScrollbarHandlerCB)
@@ -1220,7 +1276,6 @@ class PythonInterface:
 		
 	def IvyLogbookScrollHandler(self, inMessage, inWidget,	inParam1, inParam2):
 		if (inMessage == xpMsg_ScrollBarSliderPositionChanged):
-			self.logbook_index = len(self.logbook_entries) - XPGetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarSliderPosition, None)
 			self.IvyFillLogbook()
 			return 1
 		return 0
@@ -1229,6 +1284,7 @@ class PythonInterface:
 
 		
 	def IvyFillLogbook(self):
+		self.logbook_index = max(len(self.logbook_entries) - XPGetWidgetProperty(self.LogbookScrollBar, xpProperty_ScrollBarSliderPosition, None),0)
 		for index in range(0,len(self.text_field_array)):
 			text_index = index + self.logbook_index
 			if (text_index < len(self.logbook_entries)):
@@ -1303,15 +1359,14 @@ class PythonInterface:
 			XPLMDrawString(color, left + 5, top - 50, "V1:               " + str(self.ivyAircraft.li_v1), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 60, "VR:               " + str(self.ivyAircraft.li_vr), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 70, "V2:               " + str(self.ivyAircraft.li_v2), 0, xplmFont_Basic)
-			#XPLMDrawString(color, left + 5, top - 80, "Debug1:           " + str(self.logbook_index), 0, xplmFont_Basic)
-			#XPLMDrawString(color, left + 5, top - 90, "Debug2:           " + str(self.ld_longitude), 0, xplmFont_Basic)
+#			XPLMDrawString(color, left + 5, top - 80, "Debug1:           " + str(self.logbook_index), 0, xplmFont_Basic)
+#			XPLMDrawString(color, left + 5, top - 90, "Debug2:           " + str(self.ivyConfig.decition_height_arm), 0, xplmFont_Basic)
 
 # For Debug			
-#			if ((self.li_on_ground == 1) and (self.ivyAircraft.vspeeds_enabled == True) and 
-#					(self.lf_ias >= self.ivyAircraft.li_v1) and (self.lf_ground_speed > self.ivyConfig.taxi_ground_speed_min)):
-#				XPLMDrawString(color, left + 5, top - 70, "Statement TRUE", 0, xplmFont_Basic)
-#			else: 
-#				XPLMDrawString(color, left + 5, top - 70, "Statement FALSE", 0, xplmFont_Basic)
+#		if ((self.li_on_ground == 0) and (self.lf_radio_alt > (self.lf_decision_height + self.ivyConfig.decition_height_arm))):
+#			XPLMDrawString(color, left + 5, top - 100, "Statement TRUE", 0, xplmFont_Basic)
+#		else: 
+#			XPLMDrawString(color, left + 5, top - 100, "Statement FALSE", 0, xplmFont_Basic)
 		
 		
 		return 0
@@ -1331,7 +1386,7 @@ class PythonInterface:
 		# If menu selected show our logbook
 		if (inItemRef == 1):
 			if (self.MenuLogbookShow == 0):
-				self.CreateLogbookWidget(300, 550, 1300, 350)
+				self.CreateLogbookWidget(int(self.ivyConfig.log_window_pos_x), int(self.ivyConfig.log_window_pos_y), int(self.ivyConfig.log_window_width), int(self.ivyConfig.log_window_height))
 				self.MenuLogbookShow = 1
 			else:
 				self.MenuLogbookShow = 0
@@ -1343,6 +1398,8 @@ class PythonInterface:
 		elif (inItemRef == 4):
 			self.SayWindCallback(0,0,0)
 		elif (inItemRef == 5):
+			self.ToogleWindowCallback(0,0,0)
+		elif (inItemRef == 6):
 			self.ResetIvyCallback(0,0,0)
 		pass	
 
@@ -1608,10 +1665,14 @@ class PythonInterface:
 			else:
 				self.play_mp3_queue.append(self.ivyConfig.mp3_path + "bounce2" + ".mp3")
 			
-		flight_time 	= int(self.time - self.ivyPosRateClimb.time_activated)
-		flight_hours 	= int(flight_time/3600)
-		flight_minutes 	= int((flight_time % 3600)/60)
-		flight_seconds  = flight_time % 60
+		flight_time 		= int(self.time - self.ivyPosRateClimb.time_activated)
+		flight_hours 		= str(int(flight_time/3600))
+		flight_minutes 		= str(int((flight_time % 3600)/60))
+		flight_seconds  	= str(flight_time % 60)
+		
+		if (len(flight_hours) <= 1): 	flight_hours 	= "0" + flight_hours
+		if (len(flight_minutes) <= 1): 	flight_minutes 	= "0" + flight_minutes
+		if (len(flight_seconds) <= 1): 	flight_seconds 	= "0" + flight_seconds
 		
 		# Logbook
 		
@@ -1620,22 +1681,32 @@ class PythonInterface:
 		airport_name = []
 		XPLMGetNavAidInfo(airport_arrival_ref, None, None, None, None, None, None, airport_name, None, None)								   
 		self.airport_arrival = airport_name[0]
-	
-		aircraft_short = self.ls_acf_descrip[:40]
+		acf_len = int(self.ivyConfig.log_afc_name_length)
+		aircraft_short = self.ls_acf_descrip + (" " * acf_len)
+		aircraft_short = aircraft_short[:acf_len]
 		now = datetime.datetime.now()
+		if (self.landing_rated == 1):	grade="A"
+		elif (self.landing_rated == 2):	grade="B"
+		elif (self.landing_rated == 3):	grade="C"
+		elif (self.landing_rated == 4):	grade="D"
+		else:							grade="F"
+		
+		# Format strings caused random errors, using manual alignment instead
+		sink_rate_str 		= (max(5-len(str(sink_rate)),0) * " ") 				+ str(sink_rate)
+		g_force_int_str 	= (max(2-len(str(g_force_int)),0) * " ") 			+ str(g_force_int)
+		g_force_dec_2_str 	= str(g_force_dec_2) 								+ (max(2-len(str(g_force_dec_2)),0) * " ") # decimal part needs spaces afterwards
+		bounces_str 		= (max(3-len(str(self.landing_bounces)),0) * " ")	+ str(self.landing_bounces)
+		error_rate_str		= (max(3-len(str(error_rate)),0) * " ") 			+ str(error_rate)
 		
 		logbook_entry   = ""
 		logbook_entry 	= logbook_entry + str(now.year) + "/" + str(now.month) + "/" + str(now.day) + " "
 		logbook_entry 	= logbook_entry + "Aircraft: " + aircraft_short + ", "
 		logbook_entry   = logbook_entry + "Dep: " + self.airport_departure + ", "		
 		logbook_entry   = logbook_entry + "Arr: " + self.airport_arrival + ", "
-		logbook_entry   = logbook_entry + "Flight Time: " + str(flight_hours) + ":" + str(flight_minutes) + ":" + str(flight_seconds) + ", "
-		logbook_entry   = logbook_entry + "Errors: " + str(error_rate)+ ", " 
+		logbook_entry   = logbook_entry + "Flight Time: " + flight_hours + ":" + flight_minutes + ":" + flight_seconds + ", "
+		logbook_entry   = logbook_entry + "Errors: " + error_rate_str + ", " 
 		if (self.landing_bounces >= 1):   self.landing_bounces = self.landing_bounces - 1
-		logbook_entry   = logbook_entry + "Landing: grade " + str(self.landing_rated) + ", " + str(sink_rate)+ " ft/min, " + str(g_force_int) + "." + str(g_force_dec_2) + "g, " + str(self.landing_bounces)+ " bounces\n\r"
-		#logbook_entry   = logbook_entry + "v-forces: " + str(self.landing_g_normal) + "g, " 
-		
-		#logbook_entry   = logbook_entry + "Bounces: " + str(self.landing_bounces)+ "\n\r" 
+		logbook_entry   = logbook_entry + "Landing: " + grade + ", " + sink_rate_str+ " ft/min, " + g_force_int_str + "." + g_force_dec_2_str + "g, " + bounces_str + " bounce(s)\n\r"
 		logbook_file 	= open(self.ivyConfig.logbook_path, 'a+')
 		logbook_file.write(logbook_entry)
 		logbook_file.close()
@@ -1718,6 +1789,17 @@ class PythonInterface:
 			
 			if ((self.li_on_ground == 0) and (self.lf_climb_rate > self.ivyConfig.pos_rate_climb)):														self.ivyPosRateClimb.Activate(self.time)
 			elif (self.li_on_ground == 1):																												self.ivyPosRateClimb.Deactivate(self.time)
+			
+			# Decision Height Arm
+			if ((self.li_on_ground == 0) and (self.lf_radio_alt > (self.lf_decision_height + self.ivyConfig.decition_height_arm))):						self.ivyArmMinimums.Activate(self.time)
+			elif (self.li_on_ground == 1):																												self.ivyArmMinimums.Deactivate(self.time)
+			
+			if ((self.li_on_ground == 0) and 
+			   (self.ivyArmMinimums.played == 1) and
+			   (self.lf_decision_height > 0) and 
+			   (self.lf_radio_alt < (self.lf_decision_height + self.ivyConfig.decition_height_plus))):													self.ivyMinimums.Activate(self.time)
+			elif (self.lf_radio_alt > (self.lf_decision_height + self.ivyConfig.decition_height_arm)):													self.ivyMinimums.Deactivate(self.time)
+
 			
 			# Fasten Seatbelts
 			if (self.li_fastenseatbelts > 0):																											self.ivySeatBelts.Activate(self.time)
@@ -1804,7 +1886,7 @@ class PythonInterface:
 			
 			# Hello - Depending on weather
 			if ((self.aircraft_loaded == 1) and 
-				(self.li_cloud_0 < 2) and (self.li_cloud_1 < 2) and (self.li_cloud_2 < 2) and 
+				(self.li_cloud_0 < 1) and (self.li_cloud_1 < 1) and (self.li_cloud_2 < 1) and 
 				(self.lf_visibility > self.ivyConfig.vis_is_fog) and (self.li_rain == 0) and (self.li_thunder == 0)):									self.ivyHelloSun.Activate(self.time) 				
 			else:																																		self.ivyHelloSun.Deactivate(self.time)
 			
@@ -1822,7 +1904,7 @@ class PythonInterface:
 			else:																																		self.ivyHelloFog.Deactivate(self.time)
 			
 			if ((self.aircraft_loaded == 1) and 
-				((self.li_cloud_0 >= 2) or (self.li_cloud_1 >= 2) or (self.li_cloud_2 >= 2)) and 
+				((self.li_cloud_0 >= 1) or (self.li_cloud_1 >= 1) or (self.li_cloud_2 >= 1)) and 
 				(self.lf_visibility > self.ivyConfig.vis_is_fog) and (self.li_rain == 0) and (self.li_thunder == 0)):									self.ivyHelloNormal.Activate(self.time) 			
 			else:																																		self.ivyHelloNormal.Deactivate(self.time)
 			
@@ -2121,6 +2203,7 @@ class PythonInterface:
 		self.li_taxi_lights= 			XPLMGetDatai(self.i_taxi_lights) 			
 		self.li_cockpit_lights= 		XPLMGetDatai(self.i_cockpit_lights) 	
 		self.lf_radio_alt= 				XPLMGetDataf(self.f_radio_alt)
+		self.lf_decision_height=		XPLMGetDataf(self.f_decision_height)
 		self.lf8_batter_charge= 		XPLMGetDataf(self.f8_batter_charge) 
 
 		self.li_battery_on = 			XPLMGetDatai(self.i_battery_on)	
