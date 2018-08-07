@@ -960,7 +960,7 @@ class PythonInterface:
 		self.ivyBelowV2 = 				MyIvyResponse(	"below_v2", 				self.ivyConfig.mp3_path,	0,				5, 						5, 						1,					self.ivy_object_list)
 		self.ivyAboveV2 = 				MyIvyResponse(	"above_v2", 				self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list)
 		self.ivyFlapsRetracted = 		MyIvyResponse(	"flaps_retracted", 			self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivySlatsRetracted = 		MyIvyResponse(	"slaps_retracted", 			self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
+		self.ivySlatsRetracted = 		MyIvyResponse(	"slats_retracted", 			self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
 		self.ivyFlapsPosition = 		MyIvyResponse(	"flaps", 					self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
 		self.ivySlatsPosition = 		MyIvyResponse(	"slats", 					self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
 		
@@ -1597,7 +1597,7 @@ class PythonInterface:
 				
 				
 				if (act_rating > self.landing_rated) : self.landing_rated = act_rating
-				buf = "Landing: " + str(self.ivy_landing_list[obj_number].time) + " Rating: " + str(act_rating) + " | "  
+				buf = "Landing T=" + str(self.ivy_landing_list[obj_number].time) + " Sink Rate " + str(abs(self.ivy_landing_list[obj_number].sink_rate)) + " g: " + str(abs(self.ivy_landing_list[obj_number].g_normal)) + " Grade: " + str(act_rating) + " | "  
 				self.OutputFile.write(buf)
 			self.OutputFile.write("\n\r")
 			self.OutputFile.flush()
