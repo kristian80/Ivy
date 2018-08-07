@@ -447,7 +447,7 @@ class MyIvyConfiguration(object):
 			self.logbook_path 				= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyLogbook.txt"
 		
 			self.data_rate 					= 0.1
-			self.disable_after_loading 		= 1 #debug, 20 = normal
+			self.disable_after_loading 		= 20 #debug, 20 = normal
 			self.deact_after_queue 			= 0
 		
 			self.pos_rate_climb 			= 100
@@ -944,11 +944,11 @@ class PythonInterface:
 		self.ivyGNormalNegativeHigh = 	MyIvyResponse(	"g_normal_negative_high", 	self.ivyConfig.mp3_path,	0,				0.5, 					0, 						1,					self.ivy_object_list)
 		self.ivyTurbulenceNormal = 		MyIvyResponse(	"turbulence_normal", 		self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
 		self.ivyTurbolenceHigh = 		MyIvyResponse(	"turbulence_high", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
-		self.ivyLandingXGood = 			MyIvyResponse(	"landing_xgood", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list)
-		self.ivyLandingGood = 			MyIvyResponse(	"landing_good", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list)
-		self.ivyLandingNormal = 		MyIvyResponse(	"landing_normal", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list) # TODO
-		self.ivyLandingBad = 			MyIvyResponse(	"landing_bad", 				self.ivyConfig.mp3_path,	0,				5, 						1, 						0,					self.ivy_object_list)
-		self.ivyLandingXBad = 			MyIvyResponse(	"landing_xbad", 			self.ivyConfig.mp3_path,	0,				5, 						1, 						0,					self.ivy_object_list)
+		self.ivyLandingXGood = 			MyIvyResponse(	"landing_xgood", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
+		self.ivyLandingGood = 			MyIvyResponse(	"landing_good", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
+		self.ivyLandingNormal = 		MyIvyResponse(	"landing_normal", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list) # TODO
+		self.ivyLandingBad = 			MyIvyResponse(	"landing_bad", 				self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
+		self.ivyLandingXBad = 			MyIvyResponse(	"landing_xbad", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list)
 		self.ivyBaroLow = 				MyIvyResponse(	"baro_low", 				self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list)
 		self.ivyBaroGround = 			MyIvyResponse(	"baro_low", 				self.ivyConfig.mp3_path,	0,				60,						0, 						0,					self.ivy_object_list)
 		self.ivyBaroHigh = 				MyIvyResponse(	"baro_high", 				self.ivyConfig.mp3_path,	0,				120,					0, 						1,					self.ivy_object_list)
@@ -1196,8 +1196,10 @@ class PythonInterface:
 		self.d_latitude	=				XPLMFindDataRef("sim/flightmodel/position/latitude")
 		self.d_longitude =				XPLMFindDataRef("sim/flightmodel/position/longitude")
 		
-		self.i_nonsmoking = 			XPLMFindDataRef("sim/cockpit2/annunciators/no_smoking")
-		self.i_fastenseatbelt = 		XPLMFindDataRef("sim/cockpit2/annunciators/fasten_seatbelt")
+		self.i_nonsmoking = 			XPLMFindDataRef("sim/cockpit/switches/no_smoking")
+		self.i_fastenseatbelt = 		XPLMFindDataRef("sim/cockpit/switches/fasten_seat_belts")
+		
+		self.i_replay = 				XPLMFindDataRef("sim/operation/prefs/replay_mode")
 		
 		######################################################################################### End of DATAREF Find
 		
@@ -1691,6 +1693,8 @@ class PythonInterface:
 		elif (self.landing_rated == 4):	grade="D"
 		else:							grade="F"
 		
+		if (self.landing_bounces >= 1):   self.landing_bounces = self.landing_bounces - 1
+		
 		# Format strings caused random errors, using manual alignment instead
 		sink_rate_str 		= (max(5-len(str(sink_rate)),0) * " ") 				+ str(sink_rate)
 		g_force_int_str 	= (max(2-len(str(g_force_int)),0) * " ") 			+ str(g_force_int)
@@ -1698,18 +1702,24 @@ class PythonInterface:
 		bounces_str 		= (max(3-len(str(self.landing_bounces)),0) * " ")	+ str(self.landing_bounces)
 		error_rate_str		= (max(3-len(str(error_rate)),0) * " ") 			+ str(error_rate)
 		
+		dep_str 			= (max(6-len(str(self.airport_departure)),0) * " ") + str(self.airport_departure)
+		app_str				= (max(6-len(str(self.airport_arrival)),0) * " ") 	+ str(self.airport_arrival)
+		
 		logbook_entry   = ""
 		logbook_entry 	= logbook_entry + str(now.year) + "/" + str(now.month) + "/" + str(now.day) + " "
 		logbook_entry 	= logbook_entry + "Aircraft: " + aircraft_short + ", "
-		logbook_entry   = logbook_entry + "Dep: " + self.airport_departure + ", "		
-		logbook_entry   = logbook_entry + "Arr: " + self.airport_arrival + ", "
+		logbook_entry   = logbook_entry + "Dep: " + dep_str + ", "		
+		logbook_entry   = logbook_entry + "Arr: " + app_str + ", "
 		logbook_entry   = logbook_entry + "Flight Time: " + flight_hours + ":" + flight_minutes + ":" + flight_seconds + ", "
 		logbook_entry   = logbook_entry + "Errors: " + error_rate_str + ", " 
-		if (self.landing_bounces >= 1):   self.landing_bounces = self.landing_bounces - 1
+		
 		logbook_entry   = logbook_entry + "Landing: " + grade + ", " + sink_rate_str+ " ft/min, " + g_force_int_str + "." + g_force_dec_2_str + "g, " + bounces_str + " bounce(s)\n\r"
-		logbook_file 	= open(self.ivyConfig.logbook_path, 'a+')
-		logbook_file.write(logbook_entry)
-		logbook_file.close()
+		
+		# Do not write in replay mode
+		if (self.li_replay == 0):
+			logbook_file 	= open(self.ivyConfig.logbook_path, 'a+')
+			logbook_file.write(logbook_entry)
+			logbook_file.close()
 		
 		pass
 	
@@ -2308,6 +2318,7 @@ class PythonInterface:
 		
 		self.li_nonsmoking =            XPLMGetDatai(self.i_nonsmoking)
 		self.li_fastenseatbelts =       XPLMGetDatai(self.i_fastenseatbelt)
+		self.li_replay = 				XPLMGetDatai(self.i_replay)
 		
 		self.ivyAircraft.UpdateData()
 		
