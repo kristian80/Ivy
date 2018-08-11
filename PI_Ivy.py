@@ -1808,7 +1808,7 @@ class PythonInterface:
 			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_xbad" + ".mp3")
 	
 		
-		self.SpellOutNumber(error_rate)
+		if (error_rate > 0): self.SpellOutNumber(error_rate)
 	
 		# Singular - Plural
 		if (error_rate == 1):
