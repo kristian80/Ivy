@@ -1004,7 +1004,7 @@ class PythonInterface:
 		
 		self.ivySeatBelts = 			MyIvyResponse(	"seatbelts", 				self.ivyConfig.mp3_path,	0,				1, 						0, 						0,					self.ivy_object_list)
 		
-		self.ivyMinimums = 				MyIvyResponse(	"minimums", 				self.ivyConfig.mp3_path,	0,				1, 						10, 					0,					self.ivy_object_list)
+		self.ivyMinimums = 				MyIvyResponse(	"minimums", 				self.ivyConfig.mp3_path,	0,				0, 						10, 					0,					self.ivy_object_list)
 		
 		# No Callout Events
 		self.ivyArmMinimums = 			MyIvyResponse(	"arm_descent", 				self.ivyConfig.mp3_path,	0,				1, 						10, 					0,					self.ivy_object_list)
