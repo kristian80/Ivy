@@ -462,6 +462,10 @@ class MyIvyConfiguration(object):
 			self.cab_rate_high 				= -2500
 			self.cab_rate_reset_hysteresis 	= 500
 			
+			self.kt60_enabled  				= False
+			self.kt80_enabled  				= True
+			self.kt100_enabled 				= False
+			
 			self.bank_reset_low 			= 15
 			self.bank_low 					= 28
 			self.bank_high 					= 35
@@ -540,6 +544,10 @@ class MyIvyConfiguration(object):
 			config.set("IVY_SETTINGS","non_smoking_annoucetime",str(self.non_smoking_annoucetime))
 			config.set("IVY_SETTINGS","decition_height_arm",str(self.decition_height_arm))
 			config.set("IVY_SETTINGS","decition_height_plus",str(self.decition_height_plus))
+			
+			config.set("IVY_SETTINGS","kt60_enabled",str(self.kt60_enabled))
+			config.set("IVY_SETTINGS","kt80_enabled",str(self.kt80_enabled))
+			config.set("IVY_SETTINGS","kt100_enabled",str(self.kt100_enabled))
 			
 			config.set("IVY_SETTINGS","log_window_pos_x",str(self.log_window_pos_x))
 			config.set("IVY_SETTINGS","log_window_pos_y",str(self.log_window_pos_y))
@@ -632,6 +640,15 @@ class MyIvyConfiguration(object):
 			except:	pass
 			try:	self.decition_height_plus 		= config.getfloat("IVY_SETTINGS","decition_height_plus")
 			except:	pass
+			
+			try:	self.kt60_enabled 				= config.getboolean("IVY_SETTINGS","kt60_enabled")
+			except:	pass
+			try:	self.kt80_enabled 				= config.getboolean("IVY_SETTINGS","kt80_enabled")
+			except:	pass
+			try:	self.kt100_enabled 				= config.getboolean("IVY_SETTINGS","kt100_enabled")
+			except:	pass
+			
+			
 			
 			try:	self.log_window_pos_x 			= config.getfloat("IVY_SETTINGS","log_window_pos_x")
 			except:	pass
@@ -867,6 +884,7 @@ class PythonInterface:
 		
 		self.no_aircraft = True 
 		self.draw_window = 0
+		self.MenuVSpeedsShow = 0
 		self.logbook_index = 0
 		
 		self.ivyConfig = MyIvyConfiguration()
@@ -955,6 +973,8 @@ class PythonInterface:
 		self.ivyLandingLightsHigh = 	MyIvyResponse(	"landing_lights_high", 		self.ivyConfig.mp3_path,	0,				30, 					0, 						1,					self.ivy_object_list)
 		self.ivyRotate = 				MyIvyResponse(	"rotate", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
 		self.ivy60kt = 					MyIvyResponse(	"60kt", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
+		self.ivy80kt = 					MyIvyResponse(	"80kt", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
+		self.ivy100kt = 				MyIvyResponse(	"100kt", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
 		self.ivyV1 = 					MyIvyResponse(	"v1", 						self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list)
 		self.ivyVR = 					MyIvyResponse(	"vr", 						self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list)
 		self.ivyBelowV2 = 				MyIvyResponse(	"below_v2", 				self.ivyConfig.mp3_path,	0,				5, 						5, 						1,					self.ivy_object_list)
@@ -1057,11 +1077,12 @@ class PythonInterface:
 		self.ShowLogMenuHandlerCB = self.IvyMenuHandler
 		self.MenuId = XPLMCreateMenu(self, "Ivy", XPLMFindPluginsMenu(), self.IvyMenu, self.ShowLogMenuHandlerCB, 0)
 		XPLMAppendMenuItem(self.MenuId, "Show Logbook", 1, 1)
-		XPLMAppendMenuItem(self.MenuId, "Make Announcement", 2, 1)
-		XPLMAppendMenuItem(self.MenuId, "Barometric Pressure", 3, 1)
-		XPLMAppendMenuItem(self.MenuId, "Wind Situtation", 4, 1)
-		XPLMAppendMenuItem(self.MenuId, "Show Output", 5, 1)
-		XPLMAppendMenuItem(self.MenuId, "Reset Ivy", 6, 1)
+		XPLMAppendMenuItem(self.MenuId, "Set V-Speeds", 2, 1)
+		XPLMAppendMenuItem(self.MenuId, "Make Announcement", 3, 1)
+		XPLMAppendMenuItem(self.MenuId, "Barometric Pressure", 4, 1)
+		XPLMAppendMenuItem(self.MenuId, "Wind Situtation", 5, 1)
+		XPLMAppendMenuItem(self.MenuId, "Show Output", 6, 1)
+		XPLMAppendMenuItem(self.MenuId, "Reset Ivy", 7, 1)
 		
 		# Flag to tell us if theLogbook is shown
 		self.MenuLogbookShow = 0
@@ -1220,6 +1241,143 @@ class PythonInterface:
 		return self.Name, self.Sig, self.Desc
 	
 	##########################################################################################################################################################################################################
+	# VSpeeds Functions following
+	def CreateVSpeedsWidget(self):
+		x=300
+		y=300
+		x2=x+200
+		y2=y-200
+		
+		self.VSpeedsWidget = XPCreateWidget(x, y, x2, y2, 1, "Ivy VSpeeds", 1,	0, xpWidgetClass_MainWindow)
+		
+		
+		# Add Close Box decorations to the Main Widget
+		XPSetWidgetProperty(self.VSpeedsWidget, xpProperty_MainWindowHasCloseBoxes, 1)
+		
+		self.v1_label = XPCreateWidget(x+10, y-25, x+50, y-40, 1,	"V1:",  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.vr_label = XPCreateWidget(x+10, y-45, x+50, y-60, 1,	"VR:",  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.v2_label = XPCreateWidget(x+10, y-65, x+50, y-80, 1,	"V2:",  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.dh_label = XPCreateWidget(x+10, y-85, x+50, y-100, 1,	"DH:",  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		
+		self.kt60_label  = XPCreateWidget(x+10, y-105, x+50, y-120, 1,	"60kt:",  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.kt80_label  = XPCreateWidget(x+10, y-125, x+50, y-140, 1,	"80kt:",  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.kt100_label = XPCreateWidget(x+10, y-145, x+50, y-160, 1,	"100kt:",  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		
+		self.v1_label_val = XPCreateWidget(x+50, y-25, x+80, y-40, 1,	str(self.ivyAircraft.li_v1),  		0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.vr_label_val = XPCreateWidget(x+50, y-45, x+80, y-60, 1,	str(self.ivyAircraft.li_vr),  		0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.v2_label_val = XPCreateWidget(x+50, y-65, x+80, y-80, 1,	str(self.ivyAircraft.li_v2),  		0, self.VSpeedsWidget, xpWidgetClass_Caption)
+		self.dh_label_val = XPCreateWidget(x+50, y-85, x+80, y-100, 1,	str(int(self.lf_decision_height)),  0, self.VSpeedsWidget, xpWidgetClass_Caption)
+
+		self.v1_textbox = XPCreateWidget(x+80, y-30, x+120, y-40, 1,	str(self.ivyAircraft.li_v1),  		0, self.VSpeedsWidget, xpWidgetClass_TextField)
+		self.vr_textbox = XPCreateWidget(x+80, y-50, x+120, y-60, 1,	str(self.ivyAircraft.li_vr),  		0, self.VSpeedsWidget, xpWidgetClass_TextField)
+		self.v2_textbox = XPCreateWidget(x+80, y-70, x+120, y-80, 1,	str(self.ivyAircraft.li_v2),  		0, self.VSpeedsWidget, xpWidgetClass_TextField)		
+		self.dh_textbox = XPCreateWidget(x+80, y-90, x+120, y-100, 1,	str(int(self.lf_decision_height)), 	0, self.VSpeedsWidget, xpWidgetClass_TextField)		
+		
+		XPSetWidgetProperty(self.v1_textbox, xpProperty_TextFieldType, xpTextEntryField)
+		XPSetWidgetProperty(self.vr_textbox, xpProperty_TextFieldType, xpTextEntryField)
+		XPSetWidgetProperty(self.v2_textbox, xpProperty_TextFieldType, xpTextEntryField)
+		XPSetWidgetProperty(self.dh_textbox, xpProperty_TextFieldType, xpTextEntryField)
+		
+		XPSetWidgetProperty (self.v1_textbox, xpProperty_Enabled , 1 )
+		XPSetWidgetProperty (self.vr_textbox, xpProperty_Enabled , 1 )
+		XPSetWidgetProperty (self.v2_textbox, xpProperty_Enabled , 1 )
+		XPSetWidgetProperty (self.dh_textbox, xpProperty_Enabled , 1 )
+		
+		self.v1_button = XPCreateWidget(x+140, y-30, x+180, y-40, 1,	"Set",  0, self.VSpeedsWidget, xpWidgetClass_Button)
+		self.vr_button = XPCreateWidget(x+140, y-50, x+180, y-60, 1,	"Set",  0, self.VSpeedsWidget, xpWidgetClass_Button)
+		self.v2_button = XPCreateWidget(x+140, y-70, x+180, y-80, 1,	"Set",  0, self.VSpeedsWidget, xpWidgetClass_Button)	
+		self.dh_button = XPCreateWidget(x+140, y-90, x+180, y-100, 1,	"Set",  0, self.VSpeedsWidget, xpWidgetClass_Button)	
+		
+		self.kt60_button = XPCreateWidget(x+55, y-110, x+65, y-120, 1,	"",  0, self.VSpeedsWidget, xpWidgetClass_Button)	
+		XPSetWidgetProperty(self.kt60_button, xpProperty_ButtonType, xpRadioButton)
+		XPSetWidgetProperty(self.kt60_button, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox)
+		if (self.ivyConfig.kt60_enabled == True): 	XPSetWidgetProperty(self.kt60_button, xpProperty_ButtonState, 1)
+		else:										XPSetWidgetProperty(self.kt60_button, xpProperty_ButtonState, 0)
+		
+		self.kt80_button = XPCreateWidget(x+55, y-130, x+65, y-140, 1,	"",  0, self.VSpeedsWidget, xpWidgetClass_Button)	
+		XPSetWidgetProperty(self.kt80_button, xpProperty_ButtonType, xpRadioButton)
+		XPSetWidgetProperty(self.kt80_button, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox)
+		if (self.ivyConfig.kt80_enabled == True): 	XPSetWidgetProperty(self.kt80_button, xpProperty_ButtonState, 1)
+		else:										XPSetWidgetProperty(self.kt80_button, xpProperty_ButtonState, 0)
+		
+		self.kt100_button = XPCreateWidget(x+55, y-150, x+65, y-160, 1,	"",  0, self.VSpeedsWidget, xpWidgetClass_Button)	
+		XPSetWidgetProperty(self.kt100_button, xpProperty_ButtonType, xpRadioButton)
+		XPSetWidgetProperty(self.kt100_button, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox)
+		if (self.ivyConfig.kt100_enabled == True): 	XPSetWidgetProperty(self.kt100_button, xpProperty_ButtonState, 1)
+		else:										XPSetWidgetProperty(self.kt100_button, xpProperty_ButtonState, 0)
+		
+		
+		
+		self.IvyVSpeedHandlerCB = self.IvyVSpeedHandler
+		XPAddWidgetCallback(self, self.VSpeedsWidget, self.IvyVSpeedHandlerCB)
+		
+		pass
+		
+		
+
+	
+	def IvyVSpeedHandler(self, inMessage, inWidget,	inParam1, inParam2):
+		if (inMessage == xpMessage_CloseButtonPushed):
+			if (self.MenuVSpeedsShow == 1):
+				XPDestroyWidget(self, self.VSpeedsWidget, 1)
+				self.MenuVSpeedsShow = 0
+			return 1
+			
+		if (inMessage == xpMsg_PushButtonPressed):
+			if (inParam1 == self.v1_button):
+				buffer = []
+				XPGetWidgetDescriptor(self.v1_textbox, buffer, 256)
+				text = buffer[0]
+				if (text.isdigit() == True): self.ivyAircraft.li_v1 = int(text)
+				XPSetWidgetDescriptor(self.v1_textbox,   str(self.ivyAircraft.li_v1))
+				XPSetWidgetDescriptor(self.v1_label_val, str(self.ivyAircraft.li_v1))
+				
+			if (inParam1 == self.vr_button):
+				buffer = []
+				XPGetWidgetDescriptor(self.vr_textbox, buffer, 256)
+				text = buffer[0]
+				if (text.isdigit() == True): self.ivyAircraft.li_vr = int(text)
+				XPSetWidgetDescriptor(self.vr_textbox,   str(self.ivyAircraft.li_vr))
+				XPSetWidgetDescriptor(self.vr_label_val, str(self.ivyAircraft.li_vr))
+				
+			if (inParam1 == self.v2_button):
+				buffer = []
+				XPGetWidgetDescriptor(self.v2_textbox, buffer, 256)
+				text = buffer[0]
+				if (text.isdigit() == True): self.ivyAircraft.li_v2 = int(text)
+				XPSetWidgetDescriptor(self.v2_textbox,   str(self.ivyAircraft.li_v2))
+				XPSetWidgetDescriptor(self.v2_label_val, str(self.ivyAircraft.li_v2))
+				
+			if (inParam1 == self.dh_button):
+				buffer = []
+				XPGetWidgetDescriptor(self.dh_textbox, buffer, 256)
+				text = buffer[0]
+				if (text.isdigit() == True): 
+					dh_new = float(int(text))
+					XPLMSetDataf(self.f_decision_height, dh_new)
+					self.lf_decision_height = XPLMGetDataf(self.f_decision_height)
+				XPSetWidgetDescriptor(self.dh_textbox,   str(int(self.lf_decision_height)))
+				XPSetWidgetDescriptor(self.dh_label_val, str(int(self.lf_decision_height)))
+			
+		if (inMessage == xpMsg_ButtonStateChanged):	
+			if (inParam1 == self.kt60_button):
+				if (XPGetWidgetProperty(self.kt60_button, xpProperty_ButtonState, None) == 1):			self.ivyConfig.kt60_enabled = True
+				else:																					self.ivyConfig.kt60_enabled = False
+				
+			if (inParam1 == self.kt80_button):
+				if (XPGetWidgetProperty(self.kt80_button, xpProperty_ButtonState, None) == 1):			self.ivyConfig.kt80_enabled = True
+				else:																					self.ivyConfig.kt80_enabled = False	
+			
+			if (inParam1 == self.kt100_button):
+				if (XPGetWidgetProperty(self.kt100_button, xpProperty_ButtonState, None) == 1):			self.ivyConfig.kt100_enabled = True
+				else:																					self.ivyConfig.kt100_enabled = False
+			
+
+		return 0
+		pass	
+		
+	
+	##########################################################################################################################################################################################################
 	# Logbook Widget Functions following
 		
 	def CreateLogbookWidget(self, x, y, w, h):
@@ -1254,7 +1412,7 @@ class PythonInterface:
 		XPAddWidgetCallback(self, self.LogbookScrollBar, self.IvyScrollbarHandlerCB)
 		
 		for index in range (0,self.logbook_lines):
-			self.text_field_array.append(XPCreateWidget(x+5, y-(30 + (index*20)), x2-15, y-(40 + (index*20)), 1,	"test" + str(index),  0, self.LogbookWidget, xpWidgetClass_Caption))
+			self.text_field_array.append(XPCreateWidget(x+5, y-(30 + (index*20)), x2-15, y-(40 + (index*20)), 1,	"test" + str(index),  0, self.LogbookWidget, xpWidgetClass_TextField))
 			#subwindow =                  XPCreateWidget(x+5, y-(50 + (index*20)), x2-15, y-(60 + (index*20)),1, "",	0, self.LogbookWidget, xpWidgetClass_SubWindow)
 			#XPSetWidgetProperty(subwindow, xpProperty_SubWindowType, xpSubWindowStyle_SubWindow)
 			
@@ -1312,6 +1470,7 @@ class PythonInterface:
 		#XPLMDestroyMenu(self, self.IvyMenu)
 		
 		if (self.MenuLogbookShow == 1): XPDestroyWidget(self, self.LogbookWidget, 1)
+		if (self.MenuVSpeedsShow == 1): XPDestroyWidget(self, self.VSpeedsWidget, 1)
 		self.OutputFile.close()
 		self.ivyConfig.WriteConfig()
 		pass
@@ -1361,7 +1520,7 @@ class PythonInterface:
 			XPLMDrawString(color, left + 5, top - 50, "V1:               " + str(self.ivyAircraft.li_v1), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 60, "VR:               " + str(self.ivyAircraft.li_vr), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 70, "V2:               " + str(self.ivyAircraft.li_v2), 0, xplmFont_Basic)
-#			XPLMDrawString(color, left + 5, top - 80, "Debug1:           " + str(self.logbook_index), 0, xplmFont_Basic)
+			XPLMDrawString(color, left + 5, top - 80, "Decision Height:  " + str(int(self.lf_decision_height)), 0, xplmFont_Basic)
 #			XPLMDrawString(color, left + 5, top - 90, "Debug2:           " + str(self.ivyConfig.decition_height_arm), 0, xplmFont_Basic)
 
 # For Debug			
@@ -1394,14 +1553,21 @@ class PythonInterface:
 				self.MenuLogbookShow = 0
 				XPDestroyWidget(self, self.LogbookWidget, 1)
 		elif (inItemRef == 2):
-			self.AnnouncementCallback(0,0,0)
+			if (self.MenuLogbookShow == 0):
+				self.CreateVSpeedsWidget()
+				self.MenuVSpeedsShow = 1
+			else:
+				self.MenuVSpeedsShow = 0
+				XPDestroyWidget(self, self.VSpeedsWidget, 1)
 		elif (inItemRef == 3):
-			self.SayBaroCallback(0,0,0)
+			self.AnnouncementCallback(0,0,0)
 		elif (inItemRef == 4):
-			self.SayWindCallback(0,0,0)
+			self.SayBaroCallback(0,0,0)
 		elif (inItemRef == 5):
-			self.ToogleWindowCallback(0,0,0)
+			self.SayWindCallback(0,0,0)
 		elif (inItemRef == 6):
+			self.ToogleWindowCallback(0,0,0)
+		elif (inItemRef == 7):
 			self.ResetIvyCallback(0,0,0)
 		pass	
 
@@ -1521,6 +1687,11 @@ class PythonInterface:
 		self.OutputFile.write(str(digit) + " ")
 		if (digit > 0): 
 			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
+		# if total value is zero, say zero
+		elif (int(spell_number) == 0):
+			self.play_mp3_queue.append(self.ivyConfig.number_path + "0" + ".mp3")
+
+		
 		
 		self.OutputFile.write("Number End \n\r")
 		self.OutputFile.flush()
@@ -2011,8 +2182,16 @@ class PythonInterface:
 			else:																																		self.ivyBaroHigh.Deactivate(self.time)
 			
 			# 60 knots callout
-			if ((self.li_on_ground == 1) and (self.lf_ias > 58) and (self.lf_ias < 70)):																self.ivy60kt.Activate(self.time) 
+			if ((self.li_on_ground == 1) and (self.ivyConfig.kt60_enabled == True) and (self.lf_ias > 58) and (self.lf_ias < 70)):						self.ivy60kt.Activate(self.time) 
 			else:																																		self.ivy60kt.Deactivate(self.time)
+			
+			# 80 knots callout
+			if ((self.li_on_ground == 1) and (self.ivyConfig.kt80_enabled == True) and (self.lf_ias > 78) and (self.lf_ias < 90)):						self.ivy80kt.Activate(self.time) 
+			else:																																		self.ivy80kt.Deactivate(self.time)
+			
+			# 100 knots callout
+			if ((self.li_on_ground == 1) and (self.ivyConfig.kt100_enabled == True) and (self.lf_ias > 98) and (self.lf_ias < 110)):					self.ivy100kt.Activate(self.time) 
+			else:																																		self.ivy100kt.Deactivate(self.time)
 			
 			# Not rotated
 			if ((self.li_on_ground == 1) and (self.lf_ias > 180) and (self.landing_detected == 0)):														self.ivyRotate.Activate(self.time) 
@@ -2079,19 +2258,19 @@ class PythonInterface:
 			# V2
 			# V2 not achieved within 5 seconds after take off
 			
-			if ((self.li_on_ground == 1) and (self.ivyAircraft.vspeeds_enabled == True) and 
+			if ((self.li_on_ground == 1) and (self.ivyAircraft.li_v1 > 0) and 
 			    (self.lf_ias >= self.ivyAircraft.li_v1) and (self.lf_ground_speed > self.ivyConfig.taxi_ground_speed_min)):								self.ivyV1.Activate(self.time)
 			elif ((self.li_on_ground == 1) and (self.lf_ias < 10)):																						self.ivyV1.Deactivate(self.time)
 			
-			if ((self.li_on_ground == 1) and (self.ivyAircraft.vspeeds_enabled == True) and 
+			if ((self.li_on_ground == 1) and (self.ivyAircraft.li_vr > 0) and 
 			    (self.lf_ias >= self.ivyAircraft.li_vr) and (self.lf_ground_speed > self.ivyConfig.taxi_ground_speed_min)):								self.ivyVR.Activate(self.time)
 			elif ((self.li_on_ground == 1) and (self.lf_ias < 10)):																						self.ivyVR.Deactivate(self.time)
 			
-			if ((self.li_on_ground == 0) and (self.ivyAircraft.vspeeds_enabled == True) and 
+			if ((self.li_on_ground == 0) and (self.ivyAircraft.li_v2 > 0) and 
 			    (self.lf_ias >= self.ivyAircraft.li_v2)):																								self.ivyAboveV2.Activate(self.time)
 			elif (self.li_on_ground == 1):																												self.ivyAboveV2.Deactivate(self.time)
 			
-			if ((self.li_on_ground == 0) and (self.ivyAircraft.vspeeds_enabled == True) and 
+			if ((self.li_on_ground == 0) and (self.ivyAircraft.li_v2 > 0) and 
 			    (self.lf_ias < self.ivyAircraft.li_v2) and (self.ivyAboveV2.played == 0)):																
 																																						self.ivyBelowV2.Activate(self.time)
 																																						self.ivyAboveV2.Deactivate(self.time)
