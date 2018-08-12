@@ -835,6 +835,7 @@ class PythonInterface:
 		
 		
 		self.play_mp3_queue = []
+		self.ivy_landing_list = []
 		
 
 		
@@ -1515,8 +1516,8 @@ class PythonInterface:
 			XPLMDrawTranslucentDarkBox(left, top, right, bottom)
 			XPLMDrawString(color, left + 5, top - 10, "Aircraft Name:    " + str(self.ls_acf_descrip), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 20, "IvyAircraft Name: " + str(self.ivyAircraft.name), 0, xplmFont_Basic)
-			XPLMDrawString(color, left + 5, top - 30, "Slats position: 	 " + str(self.ivyAircraft.lf_flaps), 0, xplmFont_Basic)
-			XPLMDrawString(color, left + 5, top - 40, "Flaps position:   " + str(self.ivyAircraft.lf_slats), 0, xplmFont_Basic)
+			XPLMDrawString(color, left + 5, top - 30, "Slats position: 	 " + str(self.ivyAircraft.lf_slats), 0, xplmFont_Basic)
+			XPLMDrawString(color, left + 5, top - 40, "Flaps position:   " + str(self.ivyAircraft.lf_flaps), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 50, "V1:               " + str(self.ivyAircraft.li_v1), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 60, "VR:               " + str(self.ivyAircraft.li_vr), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 70, "V2:               " + str(self.ivyAircraft.li_v2), 0, xplmFont_Basic)
