@@ -1,5 +1,5 @@
 '''
-PI_Ivy.py by Kristian Ambrosch
+PI_Ivy.py 
 
 This is Ivy, your new co-pilot. 
 
@@ -2014,7 +2014,7 @@ class PythonInterface:
 			
 			# Landing lights not off on high altitude
 			if ((self.li_on_ground == 0) and (self.lf_radio_alt > 3000) and (self.lf_baro_alt > self.ivyConfig.alt_landing_lights_high) and 
-			   (self.li_landing_lights == 0)):																											self.ivyLandingLightsHigh.Activate(self.time)
+			   (self.li_landing_lights == 1)):																											self.ivyLandingLightsHigh.Activate(self.time)
 			else:																																		self.ivyLandingLightsHigh.Deactivate(self.time)
 			
 			# Beacon lights not when taxiing
