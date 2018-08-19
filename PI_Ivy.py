@@ -390,6 +390,15 @@ class MyIvyConfigAircraft(MyIvyAircraft):
 			try:	self.vr_pos 					= config.getint("IVY_AIRCRAFT","vr_pos")
 			except:	pass
 			
+			try:	self.li_v1 						= config.getint("IVY_AIRCRAFT","v1_static")
+			except:	pass
+			
+			try:	self.li_v2 						= config.getint("IVY_AIRCRAFT","v2_static")
+			except:	pass
+			
+			try:	self.li_vr						= config.getint("IVY_AIRCRAFT","vr_static")
+			except:	pass
+			
 			try:	self.slats_enabled 				= config.getboolean("IVY_AIRCRAFT","slats_enabled")
 			except:	pass
 			try:	self.lf_slats_data_ref 			= config.get("IVY_AIRCRAFT","slats_data_ref")
@@ -443,8 +452,8 @@ class MyIvyConfiguration(object):
 			self.mp3_path 					= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyMP3s\\"
 			self.number_path 				= self.mp3_path + "numbers\\"
 			self.ini_path 					= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\Ivy.ini"
-			self.script_path				= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\"
-			self.logbook_path 				= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyLogbook.txt"
+			self.config_path				= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyConfig\\"
+			self.logbook_path 				= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyConfig\\IvyLogbook.txt"
 		
 			self.data_rate 					= 0.1
 			self.disable_after_loading 		= 20 #debug, 20 = normal
@@ -511,6 +520,12 @@ class MyIvyConfiguration(object):
 			config = ConfigParser.SafeConfigParser()
 			
 			config.add_section("IVY_SETTINGS")
+			
+			config.set("IVY_SETTINGS","mp3_path",str(self.mp3_path))
+			config.set("IVY_SETTINGS","config_path",str(self.config_path))
+			config.set("IVY_SETTINGS","logbook_path",str(self.logbook_path))
+			config.set("IVY_SETTINGS","number_path",str(self.number_path))
+			
 			config.set("IVY_SETTINGS","pos_rate_climb",str(self.pos_rate_climb))
 			config.set("IVY_SETTINGS","ivy_ouch_g",str(self.ivy_ouch_g))
 			config.set("IVY_SETTINGS","brake_max_forward_g",str(self.brake_max_forward_g))
@@ -564,6 +579,17 @@ class MyIvyConfiguration(object):
 			pass
 			config = ConfigParser.SafeConfigParser()
 			config.read(self.ini_path)
+				
+			
+			try:	self.mp3_path 					= config.get("IVY_SETTINGS","mp3_path")
+			except:	pass
+			try:	self.config_path 				= config.get("IVY_SETTINGS","config_path")
+			except:	pass
+			try:	self.logbook_path 				= config.get("IVY_SETTINGS","logbook_path")
+			except:	pass
+			try:	self.number_path 				= config.get("IVY_SETTINGS","number_path")
+			except:	pass
+
 			
 			try:	self.pos_rate_climb 			= config.getfloat("IVY_SETTINGS","pos_rate_climb")
 			except:	pass
@@ -897,7 +923,7 @@ class PythonInterface:
 		self.ivyAircraft = self.ivy_aircraft_list[0]
 		
 		for index in range(1,100):
-			aircraft_ini_path = self.ivyConfig.script_path + "IvyAircraft_" + str(index) + ".ini"
+			aircraft_ini_path = self.ivyConfig.config_path + "IvyAircraft_" + str(index) + ".ini"
 			if (os.path.isfile(aircraft_ini_path)):
 				self.ivy_aircraft_list.append(MyIvyConfigAircraft(aircraft_ini_path))
 
@@ -910,7 +936,7 @@ class PythonInterface:
 		self.ResetIvy()
 		#self.Clicked = 0
 		
-		self.outputPath = XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyLog.txt"
+		self.outputPath = self.ivyConfig.config_path + "IvyLog.txt"
 		self.OutputFile = open(self.outputPath, 'w')
 		
 		# Init the pygame mixer
@@ -949,7 +975,7 @@ class PythonInterface:
 		self.ivyHelloRain = 			MyIvyResponse(	"hello_rain", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list)
 		self.ivyHelloFog = 				MyIvyResponse(	"hello_fog", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list)
 		self.ivyHelloNormal = 			MyIvyResponse(	"hello_normal", 			self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list)
-		self.ivyCabinDownNormal = 		MyIvyResponse(	"cabin_down_normal", 		self.ivyConfig.mp3_path,	0,				15, 					0, 						1,					self.ivy_object_list)
+		self.ivyCabinDownNormal = 		MyIvyResponse(	"cabin_down_normal", 		self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list)
 		self.ivyCabinDownFast = 		MyIvyResponse(	"cabin_down_fast", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list)
 		self.ivyBankNormal = 			MyIvyResponse(	"bank_normal", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
 		self.ivyBankHigh = 				MyIvyResponse(	"bank_high", 				self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list)
