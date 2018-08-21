@@ -449,7 +449,8 @@ class MyIvyConfiguration(object):
 		
 		def __init__(self):
 		
-			self.mp3_path 					= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyMP3s\\"
+			self.mp3_dir                    = "IvyMP3s"
+			self.mp3_path 					= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\" + self.mp3_dir + "\\"
 			self.number_path 				= self.mp3_path + "numbers\\"
 			self.ini_path 					= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\Ivy.ini"
 			self.config_path				= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyConfig\\"
@@ -521,10 +522,7 @@ class MyIvyConfiguration(object):
 			
 			config.add_section("IVY_SETTINGS")
 			
-			config.set("IVY_SETTINGS","mp3_path",str(self.mp3_path))
-			config.set("IVY_SETTINGS","config_path",str(self.config_path))
-			config.set("IVY_SETTINGS","logbook_path",str(self.logbook_path))
-			config.set("IVY_SETTINGS","number_path",str(self.number_path))
+			config.set("IVY_SETTINGS","mp3_dir",str(self.mp3_dir))
 			
 			config.set("IVY_SETTINGS","pos_rate_climb",str(self.pos_rate_climb))
 			config.set("IVY_SETTINGS","ivy_ouch_g",str(self.ivy_ouch_g))
@@ -581,15 +579,8 @@ class MyIvyConfiguration(object):
 			config.read(self.ini_path)
 				
 			
-			try:	self.mp3_path 					= config.get("IVY_SETTINGS","mp3_path")
+			try:	self.mp3_dir 					= config.get("IVY_SETTINGS","mp3_dir")
 			except:	pass
-			try:	self.config_path 				= config.get("IVY_SETTINGS","config_path")
-			except:	pass
-			try:	self.logbook_path 				= config.get("IVY_SETTINGS","logbook_path")
-			except:	pass
-			try:	self.number_path 				= config.get("IVY_SETTINGS","number_path")
-			except:	pass
-
 			
 			try:	self.pos_rate_climb 			= config.getfloat("IVY_SETTINGS","pos_rate_climb")
 			except:	pass
@@ -689,7 +680,8 @@ class MyIvyConfiguration(object):
 			try:	self.log_afc_name_length 		= config.getfloat("IVY_SETTINGS","log_afc_name_length")
 			except:	pass
 			
-			
+			self.mp3_path 					= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\" + self.mp3_dir + "\\"
+			self.number_path 				= self.mp3_path + "numbers\\"
 			
 			
 			
