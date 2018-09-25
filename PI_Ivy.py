@@ -457,8 +457,10 @@ class MyIvyConfiguration(object):
 			self.logbook_path 				= XPLMGetSystemPath() + "\\Resources\\plugins\\PythonScripts\\IvyConfig\\IvyLogbook.txt"
 		
 			self.data_rate 					= 0.1
-			self.disable_after_loading 		= 20 #debug, 20 = normal
+			self.disable_after_loading 		= 10 #debug, 20 = normal
 			self.deact_after_queue 			= 0
+			
+			self.passengers_enabled         = True
 		
 			self.pos_rate_climb 			= 100
 			self.ivy_ouch_g 				= 1.5
@@ -499,6 +501,9 @@ class MyIvyConfiguration(object):
 			self.ice_low 					= 0.05
 			self.ice_high 					= 0.2
 			
+			#self.carb_ice_low 				= 0.02
+			#self.carb_ice_high 				= 0.10
+			
 			self.cab_press_low 				= 13000
 			self.cab_press_high 			= 20000
 			
@@ -523,6 +528,7 @@ class MyIvyConfiguration(object):
 			config.add_section("IVY_SETTINGS")
 			
 			config.set("IVY_SETTINGS","mp3_dir",str(self.mp3_dir))
+			config.set("IVY_SETTINGS","passengers_enabled",str(self.passengers_enabled))
 			
 			config.set("IVY_SETTINGS","pos_rate_climb",str(self.pos_rate_climb))
 			config.set("IVY_SETTINGS","ivy_ouch_g",str(self.ivy_ouch_g))
@@ -580,6 +586,9 @@ class MyIvyConfiguration(object):
 				
 			
 			try:	self.mp3_dir 					= config.get("IVY_SETTINGS","mp3_dir")
+			except:	pass
+			
+			try:	self.passengers_enabled			= config.getboolean("IVY_SETTINGS","passengers_enabled")
 			except:	pass
 			
 			try:	self.pos_rate_climb 			= config.getfloat("IVY_SETTINGS","pos_rate_climb")
@@ -693,7 +702,7 @@ class MyIvyConfiguration(object):
 '''			
 
 class MyIvyResponse(object):
-	def __init__(self, event_name,mp3_path, active_on_load, minimum_occ,deactivate_time, is_error, ivy_object_list):
+	def __init__(self, event_name,mp3_path, active_on_load, minimum_occ,deactivate_time, is_error, ivy_object_list, sound_channel):
 	
 		self.queue_output = 0
 		self.event_name = event_name
@@ -710,6 +719,10 @@ class MyIvyResponse(object):
 		self.active_on_load = active_on_load
 		self.mute = 0
 		self.error_count = 0
+		self.channel_number = sound_channel
+		
+		self.ivyChannel = pygame.mixer.Channel(sound_channel)
+		self.sounds = []
 		
 		self.play_files = []
 		
@@ -717,8 +730,10 @@ class MyIvyResponse(object):
 		
 		#Append all file names that match our event
 		for file_number in range(1,21):
-			if (os.path.isfile(mp3_path + event_name + "_" + str(file_number) + ".mp3")):
-				self.play_files.append(mp3_path + event_name + "_" + str(file_number) + ".mp3")
+			if (os.path.isfile(mp3_path + event_name + "_" + str(file_number) + ".ogg")):
+				self.play_files.append(mp3_path + event_name + "_" + str(file_number) + ".ogg")
+				actsound = pygame.mixer.Sound(mp3_path + event_name + "_" + str(file_number) + ".ogg")
+				self.sounds.append(actsound)
 		pass
 
 	def Activate(self, time):
@@ -764,7 +779,7 @@ class MyIvyResponse(object):
 			self.played = 1
 			return 1
 
-		if ((self.queue_output == 0) and (pygame.mixer.music.get_busy() == True)):
+		if ((self.queue_output == 0) and (self.ivyChannel.get_busy() == True)):
 			return 0
 		
 		if (self.played == 1):
@@ -781,10 +796,9 @@ class MyIvyResponse(object):
 		self.played = 1
 		if (len(self.play_files) > 0):
 			if (self.queue_output == 1):
-				pygame.mixer.music.queue(self.play_files[random_number])
+				self.ivyChannel.queue(self.play_files[random_number])
 			else:
-				pygame.mixer.music.load(self.play_files[random_number])
-				pygame.mixer.music.play()
+				self.ivyChannel.play(self.sounds[random_number])
 			return 1
 '''
 ##########################################################################################################################################################################################################
@@ -804,8 +818,8 @@ class IvyLandingDetection(object):
 		pass
 		
 	def RateLanding(self):
-		if ((self.sink_rate > -100) and (self.g_normal < 1.5)):	self.rating = 1
-		elif (self.sink_rate > -250) and (self.g_normal < 2):	self.rating = 2
+		if ((self.sink_rate > -100) and (self.g_normal < 1.5)):		self.rating = 1
+		elif (self.sink_rate > -250) and (self.g_normal < 2):		self.rating = 2
 		elif (self.sink_rate > -400) and (self.g_normal < 3):		self.rating = 3
 		elif (self.sink_rate > -500) and (self.g_normal < 4):		self.rating = 4
 		else:														self.rating = 5
@@ -816,6 +830,42 @@ class IvyLandingDetection(object):
 			return self.rating
 		else:
 			return 0
+'''			
+##########################################################################################################################################################################################################
+# IvyPassengers
+#
+# Small class to make our passenger noise
+'''			
+class IvyPassengers(object):
+	def __init__(self, ivyConfig, channel):
+		self.ivyConfig = ivyConfig
+		self.is_screaming = False
+		#self.fading = False
+		
+		self.passengerChannel 	= pygame.mixer.Channel(channel)
+		self.passengerChannel.stop()
+		self.screamSound = pygame.mixer.Sound(self.ivyConfig.mp3_path + "passenger_screams.ogg")
+		
+		pass
+		
+	def MakeScream(self, screaming, volume):
+		volume = min(1 , volume)
+		volume = max(0.3 , volume)
+		
+		self.passengerChannel.set_volume(volume)
+		
+		if ((screaming == True) and (self.is_screaming == False)):
+			#self.fading = False
+			self.is_screaming = True
+			self.passengerChannel.play(self.screamSound, -1, 0, 1000)
+		
+		elif ((screaming == False) and (self.is_screaming == True)):
+		#elif (screaming == False):
+			self.is_screaming = False
+			self.passengerChannel.fadeout(500)
+		pass
+		
+
 			
 '''
 #######################################################################################################################################################################################################################################################################################
@@ -863,9 +913,12 @@ class PythonInterface:
 			self.ivy_object_list[obj_number].played = self.ivy_object_list[obj_number].active_on_load
 		
 		lba_acf_descrip= []
+		lba_acf_tailnumber = [] 
 
 		XPLMGetDatab(self.s_acf_descrip,lba_acf_descrip,0,240) 	
-		self.ls_acf_descrip = str(lba_acf_descrip)
+		XPLMGetDatab(self.s_acf_tailnumber,lba_acf_tailnumber,0,40)
+		
+		self.ls_acf_descrip = str(lba_acf_descrip) + str(lba_acf_tailnumber)
 		
 		self.ivyAircraft = self.ivy_aircraft_list[0]
 		
@@ -906,6 +959,8 @@ class PythonInterface:
 		self.MenuVSpeedsShow = 0
 		self.logbook_index = 0
 		
+
+		
 		self.ivyConfig = MyIvyConfiguration()
 		self.ivyConfig.ReadConfig()
 		
@@ -925,6 +980,7 @@ class PythonInterface:
 		#self.startup = 1
 		
 		self.s_acf_descrip = 			XPLMFindDataRef("sim/aircraft/view/acf_descrip") 
+		self.s_acf_tailnumber = 		XPLMFindDataRef("sim/aircraft/view/acf_tailnum") 
 		self.ResetIvy()
 		#self.Clicked = 0
 		
@@ -933,100 +989,116 @@ class PythonInterface:
 		
 		# Init the pygame mixer
 		pygame.mixer.init()
+		self.ivyChannel 		= pygame.mixer.Channel(0)
+		
+		self.ivyPassengers = IvyPassengers(self.ivyConfig, 1)
+		
+		
 		random.seed()
+		
+		
 		
 		#self.END_MUSIC_EVENT = pygame.USEREVENT + 0    # ID for music Event
 		#pygame.mixer.music.set_endevent(END_MUSIC_EVENT)
 		
-		#												#Name						PATH						DEACT_ON_LOAD		MINIMUM_OCC_TIME		DEACT_TIME				IS_ERROR			IVY_OBJECT_LIST
-		self.ivyOuch = 					MyIvyResponse(	"ouch", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivyPosRateClimb = 			MyIvyResponse(	"pos_climb", 				self.ivyConfig.mp3_path,	0,				3, 						20, 					0,					self.ivy_object_list)
-		self.ivyTyre = 					MyIvyResponse(	"tyre", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
-		self.ivyBrake = 				MyIvyResponse(	"brake", 					self.ivyConfig.mp3_path,	0,				3, 						10,						1,					self.ivy_object_list)
-		self.ivyTransponder = 			MyIvyResponse(	"transponder", 				self.ivyConfig.mp3_path,	0,				120, 					0, 						1,					self.ivy_object_list)
-		self.ivyCockpitLights = 		MyIvyResponse(	"cockpit_lights", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list) # TBD
-		self.ivyLandingLights = 		MyIvyResponse(	"landing_lights", 			self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
+		#												#Name						PATH						DEACT_ON_LOAD		MINIMUM_OCC_TIME		DEACT_TIME				IS_ERROR			IVY_OBJECT_LIST		CHANNEL
+		self.ivyOuch = 					MyIvyResponse(	"ouch", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyPosRateClimb = 			MyIvyResponse(	"pos_climb", 				self.ivyConfig.mp3_path,	0,				1, 						20, 					0,					self.ivy_object_list, 	0)
+		self.ivyTyre = 					MyIvyResponse(	"tyre", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyBrake = 				MyIvyResponse(	"brake", 					self.ivyConfig.mp3_path,	0,				2, 						10,						1,					self.ivy_object_list, 	0)
+		self.ivyTransponder = 			MyIvyResponse(	"transponder", 				self.ivyConfig.mp3_path,	0,				120, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyCockpitLights = 		MyIvyResponse(	"cockpit_lights", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list, 	0) # TBD
+		self.ivyLandingLights = 		MyIvyResponse(	"landing_lights", 			self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
 		
-		self.ivyGearUp = 				MyIvyResponse(	"gear_up", 					self.ivyConfig.mp3_path,	1,				1, 						0, 						0,					self.ivy_object_list)
-		self.ivyGearDown = 				MyIvyResponse(	"gear_down", 				self.ivyConfig.mp3_path,	1,				1, 						0, 						0,					self.ivy_object_list)
+		self.ivyGearUp = 				MyIvyResponse(	"gear_up", 					self.ivyConfig.mp3_path,	1,				1, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyGearDown = 				MyIvyResponse(	"gear_down", 				self.ivyConfig.mp3_path,	1,				1, 						0, 						0,					self.ivy_object_list, 	0)
 		
-		self.ivyBeaconLights = 			MyIvyResponse(	"beacon", 					self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list)
-		self.ivyNavLights = 			MyIvyResponse(	"nav_lights", 				self.ivyConfig.mp3_path,	0,				50, 					0, 						1,					self.ivy_object_list)
-		self.ivyStrobes = 				MyIvyResponse(	"strobes", 					self.ivyConfig.mp3_path,	0,				200, 					0, 						1,					self.ivy_object_list)
-		self.ivySkidTyres = 			MyIvyResponse(	"skid_tyres", 				self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list)
-		self.ivyBatteryOut = 			MyIvyResponse(	"battery_out", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
-		self.ivyEngineFire = 			MyIvyResponse(	"engine_fire", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
-		self.ivyEngineFlameout = 		MyIvyResponse(	"engine_flameout", 			self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
-		self.ivyEngineFailureGround = 	MyIvyResponse(	"engine_failure_ground", 	self.ivyConfig.mp3_path,	1,				0, 						0, 						1,					self.ivy_object_list)
-		self.ivyEngineFailureAir = 		MyIvyResponse(	"engine_failure_air", 		self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
-		self.ivyEngineHotStart = 		MyIvyResponse(	"engine_hot", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
-		self.ivyBirdStrike = 			MyIvyResponse(	"bird", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list)
+		self.ivyBeaconLights = 			MyIvyResponse(	"beacon", 					self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyNavLights = 			MyIvyResponse(	"nav_lights", 				self.ivyConfig.mp3_path,	0,				50, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyStrobes = 				MyIvyResponse(	"strobes", 					self.ivyConfig.mp3_path,	0,				200, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivySkidTyres = 			MyIvyResponse(	"skid_tyres", 				self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyBatteryOut = 			MyIvyResponse(	"battery_out", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyEngineFire = 			MyIvyResponse(	"engine_fire", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyEngineFlameout = 		MyIvyResponse(	"engine_flameout", 			self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyEngineFailureGround = 	MyIvyResponse(	"engine_failure_ground", 	self.ivyConfig.mp3_path,	1,				0, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyEngineFailureAir = 		MyIvyResponse(	"engine_failure_air", 		self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyEngineHotStart = 		MyIvyResponse(	"engine_hot", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyBirdStrike = 			MyIvyResponse(	"bird", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						1,					self.ivy_object_list, 	0)
 		
-		self.ivyNoBatt = 				MyIvyResponse(	"no_batt", 					self.ivyConfig.mp3_path,	0,				180, 					0, 						0,					self.ivy_object_list)
-		self.ivyHelloSun = 				MyIvyResponse(	"hello_sun", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list)
-		self.ivyHelloRain = 			MyIvyResponse(	"hello_rain", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list)
-		self.ivyHelloFog = 				MyIvyResponse(	"hello_fog", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list)
-		self.ivyHelloNormal = 			MyIvyResponse(	"hello_normal", 			self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list)
-		self.ivyCabinDownNormal = 		MyIvyResponse(	"cabin_down_normal", 		self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list)
-		self.ivyCabinDownFast = 		MyIvyResponse(	"cabin_down_fast", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list)
-		self.ivyBankNormal = 			MyIvyResponse(	"bank_normal", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivyBankHigh = 				MyIvyResponse(	"bank_high", 				self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list)
-		self.ivyBankXHigh = 			MyIvyResponse(	"bank_xhigh", 				self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list)
-		self.ivyPitchDownNormal = 		MyIvyResponse(	"pitch_down_normal", 		self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivyPitchDownHigh = 		MyIvyResponse(	"pitch_down_high", 			self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list)
-		self.ivyGNormalFlightNormal = 	MyIvyResponse(	"g_normal_flight_normal", 	self.ivyConfig.mp3_path,	0,				2, 						0, 						0,					self.ivy_object_list)
-		self.ivyGNormalFlightHigh = 	MyIvyResponse(	"g_normal_flight_high", 	self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list)
-		self.ivyGNormalFlightXHigh = 	MyIvyResponse(	"g_normal_flight_xhigh", 	self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list)
-		self.ivyGNormalNegativeLow = 	MyIvyResponse(	"g_normal_negative_low", 	self.ivyConfig.mp3_path,	0,				0.5, 					0, 						1,					self.ivy_object_list)
-		self.ivyGNormalNegativeHigh = 	MyIvyResponse(	"g_normal_negative_high", 	self.ivyConfig.mp3_path,	0,				0.5, 					0, 						1,					self.ivy_object_list)
-		self.ivyTurbulenceNormal = 		MyIvyResponse(	"turbulence_normal", 		self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
-		self.ivyTurbolenceHigh = 		MyIvyResponse(	"turbulence_high", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
-		self.ivyLandingXGood = 			MyIvyResponse(	"landing_xgood", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
-		self.ivyLandingGood = 			MyIvyResponse(	"landing_good", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
-		self.ivyLandingNormal = 		MyIvyResponse(	"landing_normal", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list) # TODO
-		self.ivyLandingBad = 			MyIvyResponse(	"landing_bad", 				self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list)
-		self.ivyLandingXBad = 			MyIvyResponse(	"landing_xbad", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list)
-		self.ivyBaroLow = 				MyIvyResponse(	"baro_low", 				self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list)
-		self.ivyBaroGround = 			MyIvyResponse(	"baro_low", 				self.ivyConfig.mp3_path,	0,				60,						0, 						0,					self.ivy_object_list)
-		self.ivyBaroHigh = 				MyIvyResponse(	"baro_high", 				self.ivyConfig.mp3_path,	0,				120,					0, 						1,					self.ivy_object_list)
-		self.ivyLandingLightsHigh = 	MyIvyResponse(	"landing_lights_high", 		self.ivyConfig.mp3_path,	0,				30, 					0, 						1,					self.ivy_object_list)
-		self.ivyRotate = 				MyIvyResponse(	"rotate", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivy60kt = 					MyIvyResponse(	"60kt", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivy80kt = 					MyIvyResponse(	"80kt", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivy100kt = 				MyIvyResponse(	"100kt", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivyV1 = 					MyIvyResponse(	"v1", 						self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list)
-		self.ivyVR = 					MyIvyResponse(	"vr", 						self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list)
-		self.ivyBelowV2 = 				MyIvyResponse(	"below_v2", 				self.ivyConfig.mp3_path,	0,				5, 						5, 						1,					self.ivy_object_list)
-		self.ivyAboveV2 = 				MyIvyResponse(	"above_v2", 				self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list)
-		self.ivyFlapsRetracted = 		MyIvyResponse(	"flaps_retracted", 			self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivySlatsRetracted = 		MyIvyResponse(	"slats_retracted", 			self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivyFlapsPosition = 		MyIvyResponse(	"flaps", 					self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivySlatsPosition = 		MyIvyResponse(	"slats", 					self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list)
+		self.ivyOverspeedFlaps = 		MyIvyResponse(	"overspeed_flaps", 			self.ivyConfig.mp3_path,	1,				0, 						1, 						1,					self.ivy_object_list, 	0)
+		self.ivyOverspeedGear = 		MyIvyResponse(	"overspeed_gear", 			self.ivyConfig.mp3_path,	1,				0, 						1, 						1,					self.ivy_object_list, 	0)
+		self.ivyOverspeedAircraft = 	MyIvyResponse(	"overspeed_aircraft", 		self.ivyConfig.mp3_path,	1,				1, 						1, 						1,					self.ivy_object_list, 	0)
+		self.ivyStall = 				MyIvyResponse(	"stall", 					self.ivyConfig.mp3_path,	1,				0, 						5, 						1,					self.ivy_object_list, 	0)
 		
-		self.ivyCrash = 				MyIvyResponse(	"crash", 					self.ivyConfig.mp3_path,	0,				3, 						0, 						1,					self.ivy_object_list)
+		self.ivyNoBatt = 				MyIvyResponse(	"no_batt", 					self.ivyConfig.mp3_path,	0,				180, 					0, 						0,					self.ivy_object_list, 	0)
+		self.ivyHelloSun = 				MyIvyResponse(	"hello_sun", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list, 	0)
+		self.ivyHelloRain = 			MyIvyResponse(	"hello_rain", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list, 	0)
+		self.ivyHelloFog = 				MyIvyResponse(	"hello_fog", 				self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list, 	0)
+		self.ivyHelloNormal = 			MyIvyResponse(	"hello_normal", 			self.ivyConfig.mp3_path,	0,				15, 					0, 						0,					self.ivy_object_list, 	0)
+		self.ivyCabinDownNormal = 		MyIvyResponse(	"cabin_down_normal", 		self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyCabinDownFast = 		MyIvyResponse(	"cabin_down_fast", 			self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyBankNormal = 			MyIvyResponse(	"bank_normal", 				self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyBankHigh = 				MyIvyResponse(	"bank_high", 				self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyBankXHigh = 			MyIvyResponse(	"bank_xhigh", 				self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyPitchDownNormal = 		MyIvyResponse(	"pitch_down_normal", 		self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyPitchDownHigh = 		MyIvyResponse(	"pitch_down_high", 			self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyGNormalFlightNormal = 	MyIvyResponse(	"g_normal_flight_normal", 	self.ivyConfig.mp3_path,	0,				2, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyGNormalFlightHigh = 	MyIvyResponse(	"g_normal_flight_high", 	self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyGNormalFlightXHigh = 	MyIvyResponse(	"g_normal_flight_xhigh", 	self.ivyConfig.mp3_path,	0,				2, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyGNormalNegativeLow = 	MyIvyResponse(	"g_normal_negative_low", 	self.ivyConfig.mp3_path,	0,				0.5, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyGNormalNegativeHigh = 	MyIvyResponse(	"g_normal_negative_high", 	self.ivyConfig.mp3_path,	0,				0.5, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyTurbulenceNormal = 		MyIvyResponse(	"turbulence_normal", 		self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list, 	0)
+		self.ivyTurbolenceHigh = 		MyIvyResponse(	"turbulence_high", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						0,					self.ivy_object_list, 	0)
+		
+		self.ivyLandingXGood = 			MyIvyResponse(	"landing_xgood", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyLandingGood = 			MyIvyResponse(	"landing_good", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyLandingNormal = 		MyIvyResponse(	"landing_normal", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list, 	0) 
+		self.ivyLandingBad = 			MyIvyResponse(	"landing_bad", 				self.ivyConfig.mp3_path,	0,				5, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyLandingXBad = 			MyIvyResponse(	"landing_xbad", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list, 	0)
+		
+		self.ivyBaroLow = 				MyIvyResponse(	"baro_low", 				self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyBaroGround = 			MyIvyResponse(	"baro_low", 				self.ivyConfig.mp3_path,	0,				60,						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyBaroHigh = 				MyIvyResponse(	"baro_high", 				self.ivyConfig.mp3_path,	0,				120,					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyLandingLightsHigh = 	MyIvyResponse(	"landing_lights_high", 		self.ivyConfig.mp3_path,	0,				30, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyRotate = 				MyIvyResponse(	"rotate", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivy60kt = 					MyIvyResponse(	"60kt", 					self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list, 	0)
+		self.ivy80kt = 					MyIvyResponse(	"80kt", 					self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list, 	0)
+		self.ivy100kt = 				MyIvyResponse(	"100kt", 					self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list, 	0)
+		self.ivyV1 = 					MyIvyResponse(	"v1", 						self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list, 	0)
+		self.ivyVR = 					MyIvyResponse(	"vr", 						self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list, 	0)
+		self.ivyBelowV2 = 				MyIvyResponse(	"below_v2", 				self.ivyConfig.mp3_path,	0,				5, 						5, 						1,					self.ivy_object_list, 	0)
+		self.ivyAboveV2 = 				MyIvyResponse(	"above_v2", 				self.ivyConfig.mp3_path,	0,				0, 						5, 						0,					self.ivy_object_list, 	0)
+		self.ivyFlapsRetracted = 		MyIvyResponse(	"flaps_retracted", 			self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivySlatsRetracted = 		MyIvyResponse(	"slats_retracted", 			self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyFlapsPosition = 		MyIvyResponse(	"flaps", 					self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivySlatsPosition = 		MyIvyResponse(	"slats", 					self.ivyConfig.mp3_path,	1,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		
+		self.ivyCrash = 				MyIvyResponse(	"crash", 					self.ivyConfig.mp3_path,	0,				3, 						0, 						1,					self.ivy_object_list, 	0)
 		# TODO
 		
-		self.ivyPressureLow = 			MyIvyResponse(	"pressure_low", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list)
-		self.ivyPressureXLow = 			MyIvyResponse(	"pressure_xlow", 			self.ivyConfig.mp3_path,	0,				1, 						0, 						1,					self.ivy_object_list)
+		self.ivyPressureLow = 			MyIvyResponse(	"pressure_low", 			self.ivyConfig.mp3_path,	0,				5, 						0, 						1,					self.ivy_object_list, 	0)
+		self.ivyPressureXLow = 			MyIvyResponse(	"pressure_xlow", 			self.ivyConfig.mp3_path,	0,				1, 						0, 						1,					self.ivy_object_list, 	0)
 		
-		self.ivyIceWindowLow = 			MyIvyResponse(	"ice_window_low", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list)
-		self.ivyIceWindowHigh = 		MyIvyResponse(	"ice_window_high", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list)
-		self.ivyIcePropellerLow = 		MyIvyResponse(	"ice_propeller_low", 		self.ivyConfig.mp3_path,	0,				40, 					0, 						1,					self.ivy_object_list) # Inlet ice
-		self.ivyIcePropellerHigh = 		MyIvyResponse(	"ice_propeller_high", 		self.ivyConfig.mp3_path,	0,				40, 					0, 						1,					self.ivy_object_list)
-		self.ivyIcePitotLow = 			MyIvyResponse(	"ice_pitot_low", 			self.ivyConfig.mp3_path,	0,				60, 					0, 						1,					self.ivy_object_list) # Ice low bei 0.05
-		self.ivyIcePitotHigh = 			MyIvyResponse(	"ice_pitot_high", 			self.ivyConfig.mp3_path,	0,				60, 					0, 						1,					self.ivy_object_list)
-		self.ivyIceAirframeLow = 		MyIvyResponse(	"ice_airframe_low", 		self.ivyConfig.mp3_path,	0,				100, 					0, 						1,					self.ivy_object_list) # Ice high bei 0.15
-		self.ivyIceAirframeHigh = 		MyIvyResponse(	"ice_airframe_high", 		self.ivyConfig.mp3_path,	0,				100, 					0, 						1,					self.ivy_object_list)
+		self.ivyIceWindowLow = 			MyIvyResponse(	"ice_window_low", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyIceWindowHigh = 		MyIvyResponse(	"ice_window_high", 			self.ivyConfig.mp3_path,	0,				20, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyIcePropellerLow = 		MyIvyResponse(	"ice_propeller_low", 		self.ivyConfig.mp3_path,	0,				40, 					0, 						1,					self.ivy_object_list, 	0) # Inlet ice
+		self.ivyIcePropellerHigh = 		MyIvyResponse(	"ice_propeller_high", 		self.ivyConfig.mp3_path,	0,				40, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyIcePitotLow = 			MyIvyResponse(	"ice_pitot_low", 			self.ivyConfig.mp3_path,	0,				60, 					0, 						1,					self.ivy_object_list, 	0) # Ice low bei 0.05
+		self.ivyIcePitotHigh = 			MyIvyResponse(	"ice_pitot_high", 			self.ivyConfig.mp3_path,	0,				60, 					0, 						1,					self.ivy_object_list, 	0)
+		self.ivyIceAirframeLow = 		MyIvyResponse(	"ice_airframe_low", 		self.ivyConfig.mp3_path,	0,				100, 					0, 						1,					self.ivy_object_list, 	0) # Ice high bei 0.15
+		self.ivyIceAirframeHigh = 		MyIvyResponse(	"ice_airframe_high", 		self.ivyConfig.mp3_path,	0,				100, 					0, 						1,					self.ivy_object_list, 	0)
 		
-		self.ivyAnnounceTakeOff = 		MyIvyResponse(	"takeoff", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
-		self.ivyAnnounceLanding = 		MyIvyResponse(	"landing", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list)
+		self.ivyAnnounceTakeOff = 		MyIvyResponse(	"takeoff", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyAnnounceLanding = 		MyIvyResponse(	"landing", 					self.ivyConfig.mp3_path,	0,				0, 						0, 						0,					self.ivy_object_list, 	0)
 		
-		self.ivySeatBelts = 			MyIvyResponse(	"seatbelts", 				self.ivyConfig.mp3_path,	0,				1, 						0, 						0,					self.ivy_object_list)
+		self.ivySeatBelts = 			MyIvyResponse(	"seatbelts", 				self.ivyConfig.mp3_path,	0,				1, 						0, 						0,					self.ivy_object_list, 	0)
 		
-		self.ivyMinimums = 				MyIvyResponse(	"minimums", 				self.ivyConfig.mp3_path,	0,				0, 						10, 					0,					self.ivy_object_list)
+		self.ivyMinimums = 				MyIvyResponse(	"minimums", 				self.ivyConfig.mp3_path,	0,				0, 						10, 					0,					self.ivy_object_list, 	0)
+		self.ivyApplause = 				MyIvyResponse(	"passenger_applause", 		self.ivyConfig.mp3_path,	1,				5, 						30, 					0,					self.ivy_object_list, 	1)
 		
 		# No Callout Events
-		self.ivyArmMinimums = 			MyIvyResponse(	"arm_descent", 				self.ivyConfig.mp3_path,	0,				1, 						10, 					0,					self.ivy_object_list)
+		self.ivyArmLanding = 			MyIvyResponse(	"arm_landing", 				self.ivyConfig.mp3_path,	0,				1, 						0, 						0,					self.ivy_object_list, 	0)
+		self.ivyArmMinimums = 			MyIvyResponse(	"arm_descent", 				self.ivyConfig.mp3_path,	0,				1, 						10, 					0,					self.ivy_object_list, 	0)
 			
 	
 		#self.ivy = 		MyIvyResponse(	"landing_lights", 		self.ivyConfig.mp3_path,	0,			0, 						0, 						0,					self.ivy_object_list)
@@ -1050,6 +1122,9 @@ class PythonInterface:
 
 		self.li_on_ground_old = 1
 		#self.Clicked = 0
+		
+		self.cab_press_rate = 0.0
+		self.cab_press_old = 0.0
 		
 		self.show_output = 1
 		
@@ -1117,7 +1192,13 @@ class PythonInterface:
 		
 		self.i_on_ground = 				XPLMFindDataRef("sim/flightmodel/failures/onground_any")
 		self.f_climb_rate = 			XPLMFindDataRef("sim/flightmodel/position/vh_ind_fpm")
-		self.f_gear_ratio = 			XPLMFindDataRef("sim/flightmodel/movingparts/gear1def")
+		
+		self.f_gear1_ratio = 			XPLMFindDataRef("sim/flightmodel/movingparts/gear1def")
+		self.f_gear2_ratio = 			XPLMFindDataRef("sim/flightmodel/movingparts/gear2def")
+		self.f_gear3_ratio = 			XPLMFindDataRef("sim/flightmodel/movingparts/gear3def")
+		self.f_gear4_ratio = 			XPLMFindDataRef("sim/flightmodel/movingparts/gear4def")
+		self.f_gear5_ratio = 			XPLMFindDataRef("sim/flightmodel/movingparts/gear5def")
+		
 		self.f_ground_speed = 			XPLMFindDataRef("sim/flightmodel/position/groundspeed")
 		self.f_ias = 					XPLMFindDataRef("sim/flightmodel/position/indicated_airspeed")
 		self.f_sun_pitch = 				XPLMFindDataRef("sim/graphics/scenery/sun_pitch_degrees")
@@ -1125,6 +1206,7 @@ class PythonInterface:
 		self.f_world_light_precent = 	XPLMFindDataRef("sim/graphics/scenery/percent_lights_on")
 		self.i_has_skid = 				XPLMFindDataRef("sim/aircraft/gear/acf_gear_is_skid")
 		self.i_transponder_mode = 		XPLMFindDataRef("sim/cockpit/radios/transponder_mode") # on = 3
+		self.i_sim_ground_speed = 		XPLMFindDataRef("sim/time/ground_speed")
 		
 		self.i_temp_sl = 				XPLMFindDataRef("sim/weather/temperature_sealevel_c") # Td ~ T - (100-RH)/5 where Td is the dew point, T is temperature, RH is relative humidity
 		self.i_dew_sl = 				XPLMFindDataRef("sim/weather/dewpoi_sealevel_c")
@@ -1140,6 +1222,12 @@ class PythonInterface:
 		self.f8_batter_charge = 		XPLMFindDataRef("sim/cockpit/electrical/battery_charge_watt_hr")
 		self.i_battery_on = 			XPLMFindDataRef("sim/cockpit/electrical/battery_on")
 		self.i_gpu_on = 				XPLMFindDataRef("sim/cockpit/electrical/gpu_on")
+		
+		self.i_flaps_overspeed = 		XPLMFindDataRef("sim/flightmodel/failures/over_vfe")
+		self.i_gear_overspeed = 		XPLMFindDataRef("sim/flightmodel/failures/over_vle")
+		self.f_aircraft_vne 		= 	XPLMFindDataRef("sim/aircraft/view/acf_Vne")
+		self.i_aircraft_overspeed = 	XPLMFindDataRef("sim/flightmodel/failures/over_vne")
+		self.i_stall = 					XPLMFindDataRef("sim/flightmodel/failures/stallwarning")
 		
 		self.i_cloud_0 = 				XPLMFindDataRef("sim/weather/cloud_type[0]")
 		self.i_cloud_1 = 				XPLMFindDataRef("sim/weather/cloud_type[0]")
@@ -1540,7 +1628,9 @@ class PythonInterface:
 			XPLMDrawString(color, left + 5, top - 60, "VR:               " + str(self.ivyAircraft.li_vr), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 70, "V2:               " + str(self.ivyAircraft.li_v2), 0, xplmFont_Basic)
 			XPLMDrawString(color, left + 5, top - 80, "Decision Height:  " + str(int(self.lf_decision_height)), 0, xplmFont_Basic)
-#			XPLMDrawString(color, left + 5, top - 90, "Debug2:           " + str(self.ivyConfig.decition_height_arm), 0, xplmFont_Basic)
+			#XPLMDrawString(color, left + 5, top - 90, "Debug1:           " + str(self.lf_cab_rate), 0, xplmFont_Basic)
+			#XPLMDrawString(color, left + 5, top -100, "Debug2:           " + str(self.lf_cab_press), 0, xplmFont_Basic)
+			#XPLMDrawString(color, left + 5, top -110, "Debug3:           " + str(self.lf_climb_rate), 0, xplmFont_Basic)
 
 # For Debug			
 #		if ((self.li_on_ground == 0) and (self.lf_radio_alt > (self.lf_decision_height + self.ivyConfig.decition_height_arm))):
@@ -1625,7 +1715,7 @@ class PythonInterface:
 	
 	def SayBaro(self):
 
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "baro_press_1.mp3")	
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "baro_press_1.ogg")	
 		self.SpellOutDigits(self.li_baro_sea_level)
 		pass
 	
@@ -1635,11 +1725,11 @@ class PythonInterface:
 	# Ivy tells you the current wind direction and speed
 	
 	def SayWind(self):
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "wind1.mp3")
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "wind1.ogg")
 		self.SpellOutNumber(int(self.lf_wind_direction))
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "wind2.mp3")
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "wind2.ogg")
 		self.SpellOutNumber(int(self.lf_wind_speed_kt))
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "knots.mp3")
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "knots.ogg")
 	
 	
 	##########################################################################################################################################################################################################
@@ -1651,22 +1741,22 @@ class PythonInterface:
 		# 1000	
 		digit = int((spell_number % 10000) / 1000 )
 		self.OutputFile.write(str(digit))
-		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".ogg")
 
 		# 100
 		digit = int((spell_number % 1000) / 100 )
 		self.OutputFile.write(str(digit))
-		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".ogg")
 		
 		# 10
 		digit = int((spell_number % 100) / 10 )
 		self.OutputFile.write(str(digit))
-		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".ogg")
 		
 		# 1
 		digit = int(spell_number % 10)
 		self.OutputFile.write(str(digit))
-		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".ogg")
 		
 		self.OutputFile.write("Digits \n\r")
 		self.OutputFile.flush()
@@ -1684,20 +1774,20 @@ class PythonInterface:
 		digit = int((spell_number % 10000) / 1000 )
 		self.OutputFile.write(str(digit) + " ")
 		if (digit > 0):
-			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
-			self.play_mp3_queue.append(self.ivyConfig.number_path + "1000" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".ogg")
+			self.play_mp3_queue.append(self.ivyConfig.number_path + "1000" + ".ogg")
 		# 100
 		digit = int((spell_number % 1000) / 100)
 		self.OutputFile.write(str(digit) + " ")
 		if (digit > 0):
-			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
-			self.play_mp3_queue.append(self.ivyConfig.number_path + "100" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".ogg")
+			self.play_mp3_queue.append(self.ivyConfig.number_path + "100" + ".ogg")
 			
 		# 10
 		digit = int((spell_number % 100) / 10)
 		self.OutputFile.write(str(digit) + " ")
 		if (digit > 1):
-			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit*10) + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit*10) + ".ogg")
 			digit = int(spell_number % 10)
 		else:
 			digit = int(spell_number % 100)
@@ -1705,10 +1795,10 @@ class PythonInterface:
 		# Single digit or <20
 		self.OutputFile.write(str(digit) + " ")
 		if (digit > 0): 
-			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.number_path + str(digit) + ".ogg")
 		# if total value is zero, say zero
 		elif (int(spell_number) == 0):
-			self.play_mp3_queue.append(self.ivyConfig.number_path + "0" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.number_path + "0" + ".ogg")
 
 		
 		
@@ -1818,44 +1908,44 @@ class PythonInterface:
 		
 		# Evaluate Flight		
 		if (error_rate == 0): 
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_zero" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_zero" + ".ogg")
 		elif (error_rate < 5):
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_good" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_good" + ".ogg")
 		elif (error_rate < 10):
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_bad" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_bad" + ".ogg")
 		else:
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_xbad" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_xbad" + ".ogg")
 	
 		
 		if (error_rate > 0): self.SpellOutNumber(error_rate)
 	
 		# Singular - Plural
 		if (error_rate == 1):
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_a" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_a" + ".ogg")
 		elif (error_rate > 1):
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_b" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "error_b" + ".ogg")
 		
 		# Tell landing sinkrate and g forces
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "landing_rate" + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "landing_rate" + ".ogg")
 		self.SpellOutNumber(sink_rate)
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "landing_feet" + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "landing_feet" + ".ogg")
 		
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "landing_g" + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "landing_g" + ".ogg")
 		self.SpellOutNumber(g_force_int)
-		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "dot" + ".mp3")
+		self.play_mp3_queue.append(self.ivyConfig.mp3_path + "dot" + ".ogg")
 		self.SpellOutNumber(g_force_dec_2)
 		
 		# Tell bounces
 		if (self.landing_bounces <= 1):
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "no_bounce" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "no_bounce" + ".ogg")
 		else:
 
-			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "bounce1" + ".mp3")
+			self.play_mp3_queue.append(self.ivyConfig.mp3_path + "bounce1" + ".ogg")
 			self.SpellOutNumber(self.landing_bounces-1)
 			if (self.landing_bounces == 2): 
-				self.play_mp3_queue.append(self.ivyConfig.mp3_path + "bounce2s" + ".mp3") # singular
+				self.play_mp3_queue.append(self.ivyConfig.mp3_path + "bounce2s" + ".ogg") # singular
 			else:
-				self.play_mp3_queue.append(self.ivyConfig.mp3_path + "bounce2" + ".mp3")
+				self.play_mp3_queue.append(self.ivyConfig.mp3_path + "bounce2" + ".ogg")
 			
 		flight_time 		= int(self.time - self.ivyPosRateClimb.time_activated)
 		flight_hours 		= str(int(flight_time/3600))
@@ -1868,15 +1958,21 @@ class PythonInterface:
 		
 		# Logbook
 		
+		lba_acf_descrip= []
+		XPLMGetDatab(self.s_acf_descrip,lba_acf_descrip,0,240) 	
+		aircraft_name = str(lba_acf_descrip) 
   
 		airport_arrival_ref = XPLMFindNavAid(None, None, self.ld_latitude, self.ld_longitude, None, xplm_Nav_Airport)	
 		airport_name = []
 		XPLMGetNavAidInfo(airport_arrival_ref, None, None, None, None, None, None, airport_name, None, None)								   
 		self.airport_arrival = airport_name[0]
 		acf_len = int(self.ivyConfig.log_afc_name_length)
-		aircraft_short = self.ls_acf_descrip + (" " * acf_len)
+		aircraft_short = aircraft_name + (" " * acf_len)
 		aircraft_short = aircraft_short[:acf_len]
+		
 		now = datetime.datetime.now()
+		year = str(now.year)
+	
 		if (self.landing_rated == 1):	grade="A"
 		elif (self.landing_rated == 2):	grade="B"
 		elif (self.landing_rated == 3):	grade="C"
@@ -1894,9 +1990,11 @@ class PythonInterface:
 		
 		dep_str 			= (max(6-len(str(self.airport_departure)),0) * " ") + str(self.airport_departure)
 		app_str				= (max(6-len(str(self.airport_arrival)),0) * " ") 	+ str(self.airport_arrival)
+		month				= (max(2-len(str(now.month)),0) * " ") 				+ str(now.month)
+		day					= (max(2-len(str(now.day)),0) * " ") 				+ str(now.day)
 		
 		logbook_entry   = ""
-		logbook_entry 	= logbook_entry + str(now.year) + "/" + str(now.month) + "/" + str(now.day) + " "
+		logbook_entry 	= logbook_entry + year + "/" + month + "/" + day + " "
 		logbook_entry 	= logbook_entry + "Aircraft: " + aircraft_short + ", "
 		logbook_entry   = logbook_entry + "Dep: " + dep_str + ", "		
 		logbook_entry   = logbook_entry + "Arr: " + app_str + ", "
@@ -1910,6 +2008,10 @@ class PythonInterface:
 			logbook_file 	= open(self.ivyConfig.logbook_path, 'a+')
 			logbook_file.write(logbook_entry)
 			logbook_file.close()
+			
+			# Reset error counters
+			for obj_number in range(0,len(self.ivy_object_list)):
+				self.ivy_object_list[obj_number].error_count = 0
 		
 		pass
 	
@@ -1922,6 +2024,9 @@ class PythonInterface:
 	def FlightLoopCallback(self, elapsedMe, elapsedSim, counter, refcon):
 	
 		self.time = self.time + self.ivyConfig.data_rate
+		
+		self.passengersScreaming = False
+		self.passengerVolume = 0.3
 		
 		# We reset the aircraft loaded situation after 60 seconds
 		if (self.time > (60 + self.ivyConfig.disable_after_loading)): 
@@ -1941,16 +2046,16 @@ class PythonInterface:
 		if (self.plugin_enabled == 0):
 			pass
 		elif (len(self.play_mp3_queue) > 0):
-			if (pygame.mixer.music.get_busy() == False):
-				pygame.mixer.music.load(self.play_mp3_queue[0])
-				pygame.mixer.music.play()
+			if (self.ivyChannel.get_busy() == False):
+				actsound = pygame.mixer.Sound(self.play_mp3_queue[0])
+				self.ivyChannel.play(actsound)
 				del self.play_mp3_queue[0]
 				self.deact_queue = self.ivyConfig.deact_after_queue
 		
 		##########################################################################################################################################################################################################
 		# NOT after Load and NOT after Crash
 
-		elif ((self.time > self.ivyConfig.disable_after_loading) and (self.aircraft_crashed == 0)):
+		elif ((self.time > self.ivyConfig.disable_after_loading) and (self.aircraft_crashed == 0) and (self.li_replay == 0)):
 	
 			if (self.lf_g_normal > self.f_g_normal_max): self.f_g_normal_max = self.lf_g_normal
 			if (self.lf_g_side > self.f_g_side_max): self.f_g_side_max = self.lf_g_side
@@ -1970,13 +2075,18 @@ class PythonInterface:
 			self.f_g_side_old = self.lf_g_side
 			self.f_g_forward_old = self.lf_g_forward
 			
+			if (self.cab_press_old != 0): 	self.cab_press_rate = 60 * (self.lf_cab_press - self.cab_press_old) / (self.li_sim_ground_speed * self.ivyConfig.data_rate)
+			self.cab_press_old = self.lf_cab_press
+			
+			
+			
 			self.DetectLanding()
 			
 			
 			# Ouch when bumping on ground
 			if ((self.li_on_ground == 1) and ((self.lf_g_normal) > self.ivyConfig.ivy_ouch_g)): #play ouch
-				pygame.mixer.music.load(self.ivyConfig.mp3_path + "ouch_1.mp3")
-				pygame.mixer.music.play()
+				actsound = pygame.mixer.Sound(self.ivyConfig.mp3_path + "ouch_1.ogg")
+				self.ivyChannel.play(actsound)
 			
 			# Check for announcemnt to make
 			self.CheckAnnouncement()
@@ -2002,15 +2112,30 @@ class PythonInterface:
 
 			
 			# Fasten Seatbelts
-			if (self.li_fastenseatbelts > 0):																											self.ivySeatBelts.Activate(self.time)
+			if (self.li_fastenseatbelts > 0):																											
+																																						self.ivySeatBelts.Activate(self.time)
 			else:																																		self.ivySeatBelts.Deactivate(self.time)
 
 			# Gear down callout
-			if (self.lf_gear_ratio > 0.999):																											self.ivyGearDown.Activate(self.time)
+			#if (self.lf_gear1_ratio > 0.999):																											self.ivyGearDown.Activate(self.time)
+			#else:																																		self.ivyGearDown.Deactivate(self.time)
+			
+			if ((self.lf_gear1_ratio == 1) and 
+			   (self.lf_gear2_ratio in range(0,2)) and 
+			   (self.lf_gear3_ratio in range(0,2)) and 
+			   (self.lf_gear4_ratio in range(0,2)) and 
+			   (self.lf_gear5_ratio in range(0,2))):																									self.ivyGearDown.Activate(self.time)
 			else:																																		self.ivyGearDown.Deactivate(self.time)
 			
 			# Gear up callout
-			if (self.lf_gear_ratio < 0.001):																											self.ivyGearUp.Activate(self.time)
+			#if (self.lf_gear1_ratio < 0.001):																											self.ivyGearUp.Activate(self.time)
+			#else:																																		self.ivyGearUp.Deactivate(self.time)
+			
+			if ((self.lf_gear1_ratio == 0) and 
+			   (self.lf_gear2_ratio in range(0,2)) and 
+			   (self.lf_gear3_ratio in range(0,2)) and 
+			   (self.lf_gear4_ratio in range(0,2)) and 
+			   (self.lf_gear5_ratio in range(0,2))):																									self.ivyGearUp.Activate(self.time)
 			else:																																		self.ivyGearUp.Deactivate(self.time)
 			
 			# Tire blown
@@ -2084,6 +2209,22 @@ class PythonInterface:
 			if ((self.li_battery_on == 0) and (self.li_gpu_on == 0)):																					self.ivyNoBatt.Activate(self.time) 				
 			else:																																		self.ivyNoBatt.Deactivate(self.time)
 			
+			# Flaps Overspeed
+			if (self.li_flaps_overspeed > 0):																											self.ivyOverspeedFlaps.Activate(self.time) 				
+			else:																																		self.ivyOverspeedFlaps.Deactivate(self.time)
+			
+			# Gear Overspeed
+			if (self.li_gear_overspeed > 0):																											self.ivyOverspeedGear.Activate(self.time) 				
+			else:																																		self.ivyOverspeedGear.Deactivate(self.time)
+			
+			# Stall
+			if (self.li_stall > 0):																														self.ivyStall.Activate(self.time) 				
+			else:																																		self.ivyStall.Deactivate(self.time)
+			
+			# Aircraft Overspeed
+			if (self.lf_ias > self.lf_aircraft_vne) and (self.lf_aircraft_vne > 1):																		self.ivyOverspeedAircraft.Activate(self.time) 				
+			else:																																		self.ivyOverspeedAircraft.Deactivate(self.time)
+			
 			# Hello - Depending on weather
 			if ((self.aircraft_loaded == 1) and 
 				(self.li_cloud_0 < 1) and (self.li_cloud_1 < 1) and (self.li_cloud_2 < 1) and 
@@ -2109,14 +2250,15 @@ class PythonInterface:
 			else:																																		self.ivyHelloNormal.Deactivate(self.time)
 			
 			# Cabin pressure falling too fast
-			if ((self.li_on_ground == 0) and (self.lf_cab_rate < self.ivyConfig.cab_rate_low)):															self.ivyCabinDownNormal.Activate(self.time) 		
-			elif (self.lf_cab_rate > (self.ivyConfig.cab_rate_low + self.ivyConfig.cab_rate_reset_hysteresis)):											self.ivyCabinDownNormal.Deactivate(self.time)
+			# Some aircraft do not get it right, when you increase the ground speed. Hence, I use both, my own and the Aircraft computation
+			if ((self.li_on_ground == 0) and (max(self.lf_cab_rate, self.lf_climb_rate) < self.ivyConfig.cab_rate_low)):								self.ivyCabinDownNormal.Activate(self.time) 		
+			elif (max(self.lf_cab_rate, self.lf_climb_rate) > (self.ivyConfig.cab_rate_low + self.ivyConfig.cab_rate_reset_hysteresis)):				self.ivyCabinDownNormal.Deactivate(self.time)
 			
 			# Cabin pressure falling rapidely
-			if ((self.li_on_ground == 0) and (self.lf_cab_rate < self.ivyConfig.cab_rate_high)):																				
+			if ((self.li_on_ground == 0) and (max(self.lf_cab_rate, self.lf_climb_rate) < self.ivyConfig.cab_rate_high)):																				
 																																						self.ivyCabinDownFast.Activate(self.time) 		
 																																						self.ivyCabinDownNormal.SetAsPlayed(self.time)
-			elif (self.lf_cab_rate > (self.ivyConfig.cab_rate_high + self.ivyConfig.cab_rate_reset_hysteresis)):										self.ivyCabinDownFast.Deactivate(self.time)
+			elif (max(self.lf_cab_rate, self.lf_climb_rate) > (self.ivyConfig.cab_rate_high + self.ivyConfig.cab_rate_reset_hysteresis)):				self.ivyCabinDownFast.Deactivate(self.time)
 			
 			# Bank angle pre-warning
 			if ((self.li_on_ground == 0) and (abs(self.lf_roll) > self.ivyConfig.bank_low)):															self.ivyBankNormal.Activate(self.time) 			
@@ -2130,6 +2272,7 @@ class PythonInterface:
 			
 			# Bank angle extremely high
 			if ((self.li_on_ground == 0) and (abs(self.lf_roll) > self.ivyConfig.bank_xhigh)):															
+																																						self.passengersScreaming = True
 																																						self.ivyBankXHigh.Activate(self.time) 
 																																						self.ivyBankHigh.SetAsPlayed(self.time)
 																																						self.ivyBankNormal.SetAsPlayed(self.time)		
@@ -2142,13 +2285,17 @@ class PythonInterface:
 			
 			# Pitch too low
 			if ((self.li_on_ground == 0) and (self.lf_pitch <= self.ivyConfig.pitch_high)):																					
+																																						self.passengersScreaming = True
 																																						self.ivyPitchDownHigh.Activate(self.time) 
 																																						self.ivyPitchDownNormal.SetAsPlayed(self.time)
 			elif (self.lf_pitch > self.ivyConfig.pitch_low):																							self.ivyPitchDownHigh.Deactivate(self.time)
 			
 			
 			# Normal G Force high
-			if ((self.li_on_ground == 0) and (self.lf_g_normal >= self.ivyConfig.max_g_down_low)):														self.ivyGNormalFlightNormal.Activate(self.time) 	
+			if ((self.li_on_ground == 0) and (self.lf_g_normal >= self.ivyConfig.max_g_down_low)):														
+																																						self.passengersScreaming = True
+																																						self.passengerVolume = max (self.passengerVolume, abs(self.lf_g_normal) / 6)
+																																						self.ivyGNormalFlightNormal.Activate(self.time) 	
 			elif (self.lf_g_normal <= self.ivyConfig.max_g_down_low_reset):																				self.ivyGNormalFlightNormal.Deactivate(self.time)
 			
 			# Normal G Force very high
@@ -2166,7 +2313,10 @@ class PythonInterface:
 			
 			
 			# Normal G Force too low
-			if ((self.li_on_ground == 0) and (self.lf_g_normal <= 0.5)):																				self.ivyGNormalNegativeLow.Activate(self.time) 	
+			if ((self.li_on_ground == 0) and (self.lf_g_normal <= 0.5)):																				
+																																						self.passengersScreaming = True
+																																						self.passengerVolume = max (self.passengerVolume, abs(self.lf_g_normal - 0.5) / 2)
+																																						self.ivyGNormalNegativeLow.Activate(self.time) 	
 			elif (self.lf_g_normal > 0.8):																												self.ivyGNormalNegativeLow.Deactivate(self.time)
 
 			# Normal G Force negative
@@ -2197,7 +2347,7 @@ class PythonInterface:
 			
 			# Barometric pressure not set to standard above transition altitude
 			if ((self.lf_baro_alt > (self.ivyConfig.trans_alt + self.ivyConfig.trans_hysteresis)) and 
-			    (abs(2992 - self.li_baro_sea_level) > self.ivyConfig.baro_tolerance)):																	self.ivyBaroHigh.Activate(self.time)
+			    (abs(2992 - self.li_baro_set) > self.ivyConfig.baro_tolerance)):																		self.ivyBaroHigh.Activate(self.time)
 			else:																																		self.ivyBaroHigh.Deactivate(self.time)
 			
 			# 60 knots callout
@@ -2306,7 +2456,7 @@ class PythonInterface:
 				for index in range(0,len(self.ivyAircraft.slats_deploy_value)):
 					if (abs(self.ivyAircraft.lf_slats - self.ivyAircraft.slats_deploy_value[index]) < self.ivyAircraft.slats_tolerance):
 						slats_activated = True
-						if (self.ivySlatsPosition.active == 0):
+						if (self.ivySlatsPosition.active == 0) and (self.ivyChannel.get_busy() == False):
 																																						self.ivySlatsPosition.Activate(self.time)
 																																						self.SpellOutNumber(self.ivyAircraft.slats_deploy_pos[index])																										
 				if (slats_activated == False):																											self.ivySlatsPosition.Deactivate(self.time)
@@ -2322,7 +2472,7 @@ class PythonInterface:
 				for index in range(0,len(self.ivyAircraft.flaps_deploy_value)):
 					if (abs(self.ivyAircraft.lf_flaps - self.ivyAircraft.flaps_deploy_value[index]) < self.ivyAircraft.flaps_tolerance):
 						flaps_activated = True
-						if (self.ivyFlapsPosition.active == 0):
+						if (self.ivyFlapsPosition.active == 0) and (self.ivyChannel.get_busy() == False):
 																																						self.ivyFlapsPosition.Activate(self.time)
 																																						self.SpellOutNumber(self.ivyAircraft.flaps_deploy_pos[index])																										
 				if (flaps_activated == False):																											self.ivyFlapsPosition.Deactivate(self.time)				
@@ -2332,30 +2482,48 @@ class PythonInterface:
 			# Rating of the Landing
 			# End of flight evaluation
 			
-			if ((self.landing_detected == 1) and (self.landing_rated == 1)):																			
+			# We want to get airborne before landing evaluation - too many false alarms on load
+			if ((self.li_on_ground == 0) and (self.lf_radio_alt > 100) and (self.lf_climb_rate > 100)):													self.ivyArmLanding.Activate(self.time)
+			
+			if ((self.landing_detected == 1) and (self.landing_rated > 0) and 
+			    (self.ivyArmLanding.played == 1) and (self.ivyConfig.passengers_enabled == True)):														self.ivyApplause.Activate(self.time)
+			elif (self.li_on_ground == 0):																												self.ivyApplause.Deactivate(self.time)
+			
+			
+			if ((self.landing_detected == 1) and (self.landing_rated == 1) and (self.lf_ground_speed < self.ivyConfig.taxi_ground_speed_min) and (self.ivyArmLanding.played == 1)):																			
 																																						self.ivyLandingXGood.Activate(self.time) 	
-																																						if (self.ivyLandingXGood.played == 1):	self.EndOfFlightEvaluation()
+																																						if (self.ivyLandingXGood.played == 1):	
+																																							self.EndOfFlightEvaluation()
+																																							self.ivyArmLanding.Deactivate(self.time)
 			else:																																		self.ivyLandingXGood.Deactivate(self.time)
 			
-			if ((self.landing_detected == 1) and (self.landing_rated == 2)):																			
+			if ((self.landing_detected == 1) and (self.landing_rated == 2) and (self.lf_ground_speed < self.ivyConfig.taxi_ground_speed_min) and (self.ivyArmLanding.played == 1)):																			
 																																						self.ivyLandingGood.Activate(self.time) 	
-																																						if (self.ivyLandingGood.played == 1):	self.EndOfFlightEvaluation()
+																																						if (self.ivyLandingGood.played == 1):	
+																																							self.EndOfFlightEvaluation()
+																																							self.ivyArmLanding.Deactivate(self.time)
 			else:																																		self.ivyLandingGood.Deactivate(self.time)
 			
-			if ((self.landing_detected == 1) and (self.landing_rated == 3)):																			
+			if ((self.landing_detected == 1) and (self.landing_rated == 3) and (self.lf_ground_speed < self.ivyConfig.taxi_ground_speed_min) and (self.ivyArmLanding.played == 1)):																			
 																																						self.ivyLandingNormal.Activate(self.time) 	
-																																						if (self.ivyLandingNormal.played == 1):	self.EndOfFlightEvaluation()
+																																						if (self.ivyLandingNormal.played == 1):	
+																																							self.EndOfFlightEvaluation()
+																																							self.ivyArmLanding.Deactivate(self.time)
 			else:																																		self.ivyLandingNormal.Deactivate(self.time)
 			
-			if ((self.landing_detected == 1) and (self.landing_rated == 4)):																			
+			if ((self.landing_detected == 1) and (self.landing_rated == 4) and (self.lf_ground_speed < self.ivyConfig.taxi_ground_speed_min) and (self.ivyArmLanding.played == 1)):																			
 																																						self.ivyLandingBad.Activate(self.time) 	
-																																						if (self.ivyLandingBad.played == 1):	self.EndOfFlightEvaluation()
+																																						if (self.ivyLandingBad.played == 1):	
+																																							self.EndOfFlightEvaluation()
+																																							self.ivyArmLanding.Deactivate(self.time)
 			else:																																		self.ivyLandingBad.Deactivate(self.time)
 			
 			
-			if ((self.landing_detected == 1) and (self.landing_rated == 5)):																			
+			if ((self.landing_detected == 1) and (self.landing_rated == 5) and (self.lf_ground_speed < self.ivyConfig.taxi_ground_speed_min) and (self.ivyArmLanding.played == 1)):																			
 																																						self.ivyLandingXBad.Activate(self.time) 
-																																						if (self.ivyLandingXBad.played == 1):	self.EndOfFlightEvaluation()
+																																						if (self.ivyLandingXBad.played == 1):	
+																																							self.EndOfFlightEvaluation()
+																																							self.ivyArmLanding.Deactivate(self.time)
 			else:																																		self.ivyLandingXBad.Deactivate(self.time)
 		
 		##########################################################################################################################################################################################################
@@ -2363,6 +2531,12 @@ class PythonInterface:
 
 		if ((self.aircraft_crashed == 1) and (self.time > self.ivyConfig.disable_after_loading)):														self.ivyCrash.Activate(self.time) 			
 		else:																																			self.ivyCrash.Deactivate(self.time)
+		
+		# Here comes the screaming
+		self.passengerVolume = max (self.passengerVolume, abs(self.lf_roll) / 120)
+		self.passengerVolume = max (self.passengerVolume, abs(self.lf_pitch) / 60)
+		
+		if (self.ivyConfig.passengers_enabled == True):		self.ivyPassengers.MakeScream(self.passengersScreaming, self.passengerVolume)
 			
 		#if ((self.lf_world_light_precent > 0.5) and (self.lf_climb_rate > 100)):  pass
 		
@@ -2387,19 +2561,31 @@ class PythonInterface:
 		
 		
 		lba_acf_descrip= []
+		lba_acf_tailnumber = [] 
 
 		XPLMGetDatab(self.s_acf_descrip,lba_acf_descrip,0,240) 	
-		self.ls_acf_descrip = str(lba_acf_descrip)
+		XPLMGetDatab(self.s_acf_tailnumber,lba_acf_tailnumber,0,40)
+		
+		self.ls_acf_descrip = str(lba_acf_descrip) + str(lba_acf_tailnumber)
+		
+		
 		self.li_on_ground= 				XPLMGetDatai(self.i_on_ground) 			
 		self.lf_climb_rate= 			XPLMGetDataf(self.f_climb_rate) 
-		self.lf_gear_ratio=				XPLMGetDataf(self.f_gear_ratio) 
+		
+		self.lf_gear1_ratio=			XPLMGetDataf(self.f_gear1_ratio) 
+		self.lf_gear2_ratio=			XPLMGetDataf(self.f_gear2_ratio) 
+		self.lf_gear3_ratio=			XPLMGetDataf(self.f_gear3_ratio) 
+		self.lf_gear4_ratio=			XPLMGetDataf(self.f_gear4_ratio) 
+		self.lf_gear5_ratio=			XPLMGetDataf(self.f_gear5_ratio) 
+		
 		self.lf_ground_speed= 			XPLMGetDataf(self.f_ground_speed) 	* 3600/1852	# is m/s and we want nm/h
 		self.lf_ias= 					XPLMGetDataf(self.f_ias)
 		self.lf_sun_pitch= 				XPLMGetDataf(self.f_sun_pitch) 			
 		self.lf_airport_light= 			XPLMGetDataf(self.f_airport_light) 		
 		self.lf_world_light_precent= 	XPLMGetDataf(self.f_world_light_precent) 	
 		self.li_has_skid= 				XPLMGetDatai(self.i_has_skid) 			
-		self.li_transponder_mode= 		XPLMGetDatai(self.i_transponder_mode) 	
+		self.li_transponder_mode= 		XPLMGetDatai(self.i_transponder_mode) 
+		self.li_sim_ground_speed=		XPLMGetDatai(self.i_sim_ground_speed)
 		
 		self.li_temp_sl= 				XPLMGetDatai(self.i_temp_sl) 				
 		self.li_dew_sl= 				XPLMGetDatai(self.i_dew_sl) 				
@@ -2416,6 +2602,12 @@ class PythonInterface:
 
 		self.li_battery_on = 			XPLMGetDatai(self.i_battery_on)	
 		self.li_gpu_on = 				XPLMGetDatai(self.i_gpu_on)	
+		
+		self.li_flaps_overspeed = 	    XPLMGetDatai(self.i_flaps_overspeed)	
+		self.li_gear_overspeed = 	    XPLMGetDatai(self.i_gear_overspeed)
+		self.li_aircraft_overspeed =    XPLMGetDatai(self.i_aircraft_overspeed)
+		self.lf_aircraft_vne = 			XPLMGetDataf(self.f_aircraft_vne)
+		self.li_stall = 				XPLMGetDatai(self.i_stall)
 
 		self.li_cloud_0 = 				XPLMGetDatai(self.i_cloud_0) 				
 		self.li_cloud_1 = 				XPLMGetDatai(self.i_cloud_1) 				
