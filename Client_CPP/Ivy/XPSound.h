@@ -80,10 +80,10 @@ public:
 	// Initialize OpenAL
 	int			InitSound(char * p_file_path);
 	// Load a Wave file OpenAL
-	ALuint		CreateBuffer(char * file_name);
+	ALuint		CreateBuffer(std::string &file_name);
 	void		RemoveBuffer(ALuint ali_buffer_source);
 	ALuint		CreateSound(ALenum looping);
-	bool		PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source, float pitch);
+	bool		PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source);
 	bool		IsPlayingSound(ALuint ali_sound_source);
 	void		SetSoundPitch(ALuint ali_sound_source, float pitch);
 	void		RemoveSound(ALuint ali_sound_source);

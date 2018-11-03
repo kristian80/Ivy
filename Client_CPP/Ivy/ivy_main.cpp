@@ -72,9 +72,10 @@ static float InitPlugin(float elapsed, float elapsed_sim, int counter, void * re
 	*p_slash = 0;
 
 
+
 	pIvySound->InitSound(p_dir_path);
 	my_sound = pIvySound->CreateSound(AL_FALSE);
-	my_buffer = pIvySound->CreateBuffer("sound.wav");
+	//my_buffer = pIvySound->CreateBuffer("sound.wav");
 	return 0.0f;
 }
 
@@ -128,7 +129,7 @@ PLUGIN_API void XPluginReceiveMessage(XPLMPluginID from, int msg, void * p)
 			// We check for null contexts both for us (our init failed) and the old context
 			// (X-plane's sound failed).
 
-			pIvySound->PlaySingleSound(my_sound, my_buffer, 1.0f);
+			pIvySound->PlaySingleSound(my_sound, my_buffer);
 			
 		}
 		break;

@@ -120,6 +120,10 @@
       <ProgramDataBaseFileName>.\Debug\64\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <StructMemberAlignment>Default</StructMemberAlignment>
+      <LanguageStandard>
+      </LanguageStandard>
+      <EnableModules>
+      </EnableModules>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -156,6 +160,7 @@
     <ClCompile Include="XPSound.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ivy.h" />
     <ClInclude Include="IvyLandingDetection.h" />
     <ClInclude Include="IvyPassengers.h" />
     <ClInclude Include="MyIvy.h" />

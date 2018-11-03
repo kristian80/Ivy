@@ -253,8 +253,12 @@ void XPSound::CheckOpenALError(void)
 		printf("ERROR: %d\n", e);
 }
 
-ALuint XPSound::CreateBuffer(char * file_name)
+ALuint XPSound::CreateBuffer(std::string &file_name)
 {
+	char c_file_name[2048];
+
+	strcpy(c_file_name, file_name.c_str());
+
 	// Context Switch
 	if (mpSoundCtx == NULL)
 	{
@@ -270,7 +274,7 @@ ALuint XPSound::CreateBuffer(char * file_name)
 
 	// Generate 1 source and load a buffer of audio.
 	
-	ALuint ali_sound_buffer = LoadWave(file_name);
+	ALuint ali_sound_buffer = LoadWave(c_file_name);
 	CheckOpenALError();
 
 	// Basic initializtion code to play a sound: specify the buffer the source is playing, as well as some 
@@ -332,7 +336,7 @@ ALuint XPSound::CreateSound(ALenum looping)
 	return ali_sound_source;
 }
 
-bool XPSound::PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source, float pitch)
+bool XPSound::PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source)
 {
 	char debug_msg[1024];
 	XPLMDebugString("Ivy: PlaySingleSound.\n");
@@ -362,7 +366,7 @@ bool XPSound::PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source,
 	{
 		XPLMDebugString("Ivy: AL_STOPPED.\n");
 		alSourcei(ali_sound_source, AL_BUFFER, ali_buffer_source);
-		alSourcef(ali_sound_source, AL_PITCH, pitch);
+		//alSourcef(ali_sound_source, AL_PITCH, pitch);
 		alSourcePlay(ali_sound_source);
 		played = true;
 	}

@@ -1,23 +1,15 @@
 #pragma once
 #define IVY_FS_MAX 10
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <list>
+#include "Ivy.h"
 
-#include "XPLMDefs.h"
-#include "XPLMProcessing.h"
-#include "XPLMDisplay.h"
-#include "XPLMGraphics.h"
-#include "XPLMDataAccess.h"
-#include "XPLMUtilities.h"
-#include "XPLMNavigation.h"
-#include "XPLMPlugin.h"
-#include "XPLMMenus.h"
-#include "XPWidgetDefs.h"
-#include "XPWidgets.h"
-#include "XPStandardWidgets.h"
-#include "XPWidgetUtils.h"
+// OS X: we use this to convert our file path.
+#if APL
+#include <Carbon/Carbon.h>
+#endif
+
+// Your include paths for OpenAL may vary by platform.
+#include "al.h"
+#include "alc.h"
 
 class MyIvyConfigAircraft
 {
