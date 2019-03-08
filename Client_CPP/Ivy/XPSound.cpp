@@ -1,6 +1,16 @@
 #include "XPSound.h"
 
 
+// Delete this file, if it is not part of Ivy (controls debug output only)
+#define IVY
+
+#ifdef IVY
+	#include "Ivy.h"
+	#define XPSoundDebugString IvyDebugString
+#else
+	#define XPSoundDebugString XPLMDebugString
+#endif
+
 
 XPSound::XPSound()
 {
@@ -42,10 +52,10 @@ XPSound::~XPSound()
 
 
 // Initialize OpenAL
-int XPSound::InitSound(char * p_file_path)
+int XPSound::InitSound()
 {
 	char buf[2048];
-	XPLMDebugString("Ivy: Init Sound.\n");
+	XPSoundDebugString("XPSound: Init Sound.\n");
 	// We have to save the old context and restore it later, so that we don't interfere with X-Plane
 	// and other plugins.
 
@@ -53,12 +63,12 @@ int XPSound::InitSound(char * p_file_path)
 
 	// Try to create our own default device and context.  If we fail, we're dead, we won't play any sound.
 
-	strcpy(mp_mp3_path, p_file_path);
+	//strcpy(mp_mp3_path, p_file_path);
 
 	mpSoundDevice = alcOpenDevice(NULL);
 	if (mpSoundDevice == NULL)
 	{
-		XPLMDebugString("Ivy: Could not open the default OpenAL device.\n");
+		XPSoundDebugString("XPSound: Could not open the default OpenAL device.\n");
 		return 0;
 	}
 	mpSoundCtx = alcCreateContext(mpSoundDevice, NULL);
@@ -68,7 +78,7 @@ int XPSound::InitSound(char * p_file_path)
 			alcMakeContextCurrent(old_ctx);
 		alcCloseDevice(mpSoundDevice);
 		mpSoundDevice = NULL;
-		XPLMDebugString("Ivy: Could not create a context.\n");
+		XPSoundDebugString("XPSound: Could not create a context.\n");
 		return 0;
 	}
 
@@ -90,27 +100,27 @@ char * XPSound::WaveChunkEnd(char * chunk_start, int swapped)
 }
 
 // Load a Wave file OpenAL
-ALuint XPSound::LoadWave(char * p_file_name)
+ALuint XPSound::LoadWave(const char * p_file_name)
 {
 	// First: we open the file and copy it into a single large memory buffer for processing.
 	
 	char p_full_path[2048];
 
-	strcpy(p_full_path, mp_mp3_path);
-	strcat(p_full_path, p_file_name);
+	strcpy(p_full_path, p_file_name);
+	//strcat(p_full_path, p_file_name);
 
 	FILE * fp = fopen(p_full_path, "rb");
 	char debug_msg[1024];
 
-	sprintf(debug_msg, "Ivy: reading file: %s\n", p_full_path);
-	XPLMDebugString(debug_msg);
+	sprintf(debug_msg, "XPSound: reading file: %s\n", p_full_path);
+	XPSoundDebugString(debug_msg);
 
 	if (fp == NULL)
 	{
-		XPLMDebugString("Ivy: WAVE file load failed - could not open.\n");
-		sprintf(debug_msg, "Ivy: Filename: %s", p_full_path);
-		XPLMDebugString(debug_msg);
-		return 0;
+		XPSoundDebugString("XPSound: WAVE file load failed - could not open.\n");
+		sprintf(debug_msg, "XPSound: Filename: %s", p_full_path);
+		XPSoundDebugString(debug_msg);
+		return XPSOUND_INVALID_SOUND;
 	}
 
 	fseek(fp, 0, SEEK_END);
@@ -121,21 +131,21 @@ ALuint XPSound::LoadWave(char * p_file_name)
 
 	if (mem == NULL)
 	{
-		XPLMDebugString("Ivy: WAVE file load failed - could not allocate memory.\n");
-		sprintf(debug_msg, "Ivy: Filename: %s", p_full_path);
-		XPLMDebugString(debug_msg);
+		XPSoundDebugString("XPSound: WAVE file load failed - could not allocate memory.\n");
+		sprintf(debug_msg, "XPSound: Filename: %s", p_full_path);
+		XPSoundDebugString(debug_msg);
 		fclose(fp);
-		return 0;
+		return XPSOUND_INVALID_SOUND;
 	}
 
 	if (fread(mem, 1, file_size, fp) != file_size)
 	{
-		XPLMDebugString("Ivy: WAVE file load failed - could not read file.\n");
-		sprintf(debug_msg, "Ivy: Filename: %s", p_full_path);
-		XPLMDebugString(debug_msg);
+		XPSoundDebugString("XPSound: WAVE file load failed - could not read file.\n");
+		sprintf(debug_msg, "XPSound: Filename: %s", p_full_path);
+		XPSoundDebugString(debug_msg);
 		free(mem);
 		fclose(fp);
-		return 0;
+		return XPSOUND_INVALID_SOUND;
 	}
 	fclose(fp);
 	char * mem_end = mem + file_size;
@@ -163,11 +173,11 @@ ALuint XPSound::LoadWave(char * p_file_name)
 		riff[1] != 'A' ||
 		riff[2] != 'V' ||
 		riff[3] != 'E')
-		FAIL("Ivy: Could not find WAVE signature in wave file.\n")
+		FAIL("XPSound: Could not find WAVE signature in wave file.\n")
 
 		char * format = WaveFindChunk(riff + 4, WaveChunkEnd(riff, swapped), FMT_ID, swapped);
 	if (format == NULL)
-		FAIL("Ivy: Could not find FMT  chunk in wave file.\n")
+		FAIL("XPSound: Could not find FMT  chunk in wave file.\n")
 
 		// Find the format chunk, and swap the values if needed.  This gives us our real format.
 
@@ -184,12 +194,12 @@ ALuint XPSound::LoadWave(char * p_file_name)
 
 	// Reject things we don't understand...expand this code to support weirder audio formats.
 
-	if (fmt->format != 1) FAIL("Ivy: Wave file is not PCM format data.\n")
+	if (fmt->format != 1) FAIL("XPSound: Wave file is not PCM format data.\n")
 		if (fmt->num_channels != 1 && fmt->num_channels != 2) FAIL("Must have mono or stereo sound.\n")
 			if (fmt->bits_per_sample != 8 && fmt->bits_per_sample != 16) FAIL("Must have 8 or 16 bit sounds.\n")
 				char * data = WaveFindChunk(riff + 4, WaveChunkEnd(riff, swapped), DATA_ID, swapped);
 	if (data == NULL)
-		FAIL("Ivy: I could not find the DATA chunk.\n")
+		FAIL("XPSound: I could not find the DATA chunk.\n")
 
 	int sample_size = fmt->num_channels * fmt->bits_per_sample / 8;
 	int data_bytes = WaveChunkEnd(data, swapped) - data;
@@ -214,14 +224,14 @@ ALuint XPSound::LoadWave(char * p_file_name)
 
 	ALuint buf_id = 0;
 	alGenBuffers(1, &buf_id);
-	if (buf_id == 0) FAIL("Ivy: Could not generate openal buffer id.\n");
+	if (buf_id == 0) FAIL("XPSound: Could not generate openal buffer id.\n");
 
 	alBufferData(buf_id, fmt->bits_per_sample == 16 ?
 		(fmt->num_channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16) :
 		(fmt->num_channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8),
 		data, data_bytes, fmt->sample_rate);
 	free(mem);
-	XPLMDebugString("Ivy: WAVE loaded.\n");
+	XPSoundDebugString("XPSound: WAVE loaded.\n");
 	return buf_id;
 }
 
@@ -262,8 +272,8 @@ ALuint XPSound::CreateBuffer(std::string &file_name)
 	// Context Switch
 	if (mpSoundCtx == NULL)
 	{
-		XPLMDebugString("Ivy: No Sound Context.\n");
-		return false;
+		XPSoundDebugString("XPSound: No Sound Context.\n");
+		return XPSOUND_INVALID_SOUND;
 	}
 	ALCcontext * old_ctx = alcGetCurrentContext();
 	alcMakeContextCurrent(mpSoundCtx);
@@ -308,7 +318,7 @@ ALuint XPSound::CreateSound(ALenum looping)
 	// Context Switch
 	if (mpSoundCtx == NULL)
 	{
-		XPLMDebugString("Ivy: No Sound Context.\n");
+		XPSoundDebugString("XPSound: No Sound Context.\n");
 		return false;
 	}
 	ALCcontext * old_ctx = alcGetCurrentContext();
@@ -338,17 +348,23 @@ ALuint XPSound::CreateSound(ALenum looping)
 
 bool XPSound::PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source)
 {
-	char debug_msg[1024];
-	XPLMDebugString("Ivy: PlaySingleSound.\n");
+	if (ali_buffer_source == XPSOUND_INVALID_SOUND)
+	{
+		XPSoundDebugString("XPSound: PlaySingleSound - Invalid Value.\n");
+		return false;
+	}
 
-	sprintf(debug_msg, "Ivy: Play CTX: %i, Sound %i, Buffer %i\n", (int) mpSoundCtx, (int) ali_sound_source, (int) ali_buffer_source);
-	XPLMDebugString(debug_msg);
+	char debug_msg[1024];
+	//XPSoundDebugString("XPSound: PlaySingleSound.\n");
+
+	//sprintf(debug_msg, "XPSound: Play CTX: %i, Sound %i, Buffer %i\n", (int) mpSoundCtx, (int) ali_sound_source, (int) ali_buffer_source);
+	//XPSoundDebugString(debug_msg);
 
 	bool played = false;
 	// Context Switch
 	if (mpSoundCtx == NULL)
 	{
-		XPLMDebugString("Ivy: No Sound Context.\n");
+		XPSoundDebugString("XPSound: No Sound Context.\n");
 		return false;
 	}
 	ALCcontext * old_ctx = alcGetCurrentContext();
@@ -358,13 +374,13 @@ bool XPSound::PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source)
 	ALint source_state = 0;
 	alGetSourcei(ali_sound_source, AL_SOURCE_STATE, &source_state);
 
-	sprintf(debug_msg, "Ivy: Source State %i\n", (int)source_state);
-	XPLMDebugString(debug_msg);
+	sprintf(debug_msg, "XPSound: Source State %i\n", (int)source_state);
+	XPSoundDebugString(debug_msg);
 
 	// do not interrupt currently played sound
 	if (source_state != AL_PLAYING)
 	{
-		XPLMDebugString("Ivy: AL_STOPPED.\n");
+		//XPSoundDebugString("XPSound: AL_STOPPED.\n");
 		alSourcei(ali_sound_source, AL_BUFFER, ali_buffer_source);
 		//alSourcef(ali_sound_source, AL_PITCH, pitch);
 		alSourcePlay(ali_sound_source);
@@ -372,7 +388,7 @@ bool XPSound::PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source)
 	}
 	else
 	{
-		XPLMDebugString("Ivy: NOT AL_STOPPED.\n");
+		//XPSoundDebugString("XPSound: NOT AL_STOPPED.\n");
 	}
 	
 	// Restore old Context
@@ -400,18 +416,18 @@ bool XPSound::IsPlayingSound(ALuint ali_sound_source)
 	return playing;
 }
 
-void XPSound::SetSoundPitch(ALuint ali_sound_source, float pitch)
+void XPSound::SetSoundGain(ALuint ali_sound_source, float gain)
 {
 	// Context Switch
 	if (mpSoundCtx == NULL)
 	{
-		XPLMDebugString("Ivy: No Sound Context.\n");
+		XPSoundDebugString("XPSound: No Sound Context.\n");
 		return;
 	}
 	ALCcontext * old_ctx = alcGetCurrentContext();
 	alcMakeContextCurrent(mpSoundCtx);
 
-	alSourcef(ali_sound_source, AL_PITCH, pitch);
+	alSourcef(ali_sound_source, AL_GAIN, gain);
 
 	// Restore old Context
 	if (old_ctx)	alcMakeContextCurrent(old_ctx);
@@ -422,7 +438,7 @@ void XPSound::RemoveSound(ALuint ali_sound_source)
 	// Context Switch
 	if (mpSoundCtx == NULL)
 	{
-		XPLMDebugString("Ivy: No Sound Context.\n");
+		XPSoundDebugString("XPSound: No Sound Context.\n");
 		return ;
 	}
 	ALCcontext * old_ctx = alcGetCurrentContext();
@@ -433,4 +449,14 @@ void XPSound::RemoveSound(ALuint ali_sound_source)
 
 	// Restore old Context
 	if (old_ctx)	alcMakeContextCurrent(old_ctx);
+}
+
+void XPSound::RemoveAllBuffers()
+{
+	while (m_buffer_list.size() != 0)
+	{
+		ALuint ali_buffer = *m_buffer_list.begin();
+		m_buffer_list.pop_front();
+		RemoveBuffer(ali_buffer);
+	}
 }

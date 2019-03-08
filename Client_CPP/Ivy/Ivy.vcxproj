@@ -57,7 +57,7 @@
     <TargetExt>.xpl</TargetExt>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>win</TargetName>
-    <IncludePath>C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;E:\Docs\Games\X-Plane\Ivy\boost_1_55_0\boost_1_55_0\;$(IncludePath)</IncludePath>
+    <IncludePath>E:\Docs\Games\X-Plane\Ivy\imgui_tabs;E:\Docs\Games\X-Plane\Ivy\IvyGit\Client_CPP\Ivy\SDK\CHeaders\Wrappers;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\;C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;E:\Docs\Games\X-Plane\Ivy\imgui;E:\Docs\Games\X-Plane\Ivy\xsb_public;E:\Docs\Games\X-Plane\Ivy\boost_1_55_0\boost_1_55_0\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\OpenAL 1.1 SDK\libs\Win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,7 +142,7 @@
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <LinkDLL>true</LinkDLL>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <ImportLibrary>.\Debug\64\Ivy.lib</ImportLibrary>
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\OpenAL 1.1 SDK\libs\Win64;SDK\Libraries\Win;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -150,6 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\..\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\..\imgui\misc\cpp\imgui_stdlib.cpp" />
+    <ClCompile Include="..\..\..\xsb_public\ImgWindow.cpp" />
+    <ClCompile Include="IvyImguiWidget.cpp" />
     <ClCompile Include="IvyLandingDetection.cpp" />
     <ClCompile Include="IvyPassengers.cpp" />
     <ClCompile Include="ivy_main.cpp" />
@@ -161,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ivy.h" />
+    <ClInclude Include="IvyImguiWidget.h" />
     <ClInclude Include="IvyLandingDetection.h" />
     <ClInclude Include="IvyPassengers.h" />
     <ClInclude Include="MyIvy.h" />

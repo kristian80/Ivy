@@ -1,0 +1,156 @@
+2018/10/ 2 Aircraft: ['Dornier Do 228']                      , Dep:   SCOH, Arr:   SAWT, Flight Time: 00:16:01, Errors:   1, Landing: A,    90 ft/min,  1.20g,   0 bounce(s)
+2018/10/ 2 Aircraft: ['Dornier Do 228']                      , Dep:   SAWT, Arr:   SAWA, Flight Time: 00:08:24, Errors:   5, Landing: C,   178 ft/min,  2.6 g,   0 bounce(s)
+2018/10/ 2 Aircraft: ['AB 412']                              , Dep:   7S13, Arr:   3U91, Flight Time: 00:07:38, Errors:   6, Landing: B,    47 ft/min,  1.87g,   2 bounce(s)
+2018/10/ 2 Aircraft: ['AB 412']                              , Dep:   3U91, Arr:   9S52, Flight Time: 00:04:14, Errors:   4, Landing: B,   101 ft/min,  1.50g,   0 bounce(s)
+2018/10/ 6 Aircraft: ['Dornier Do 228']                      , Dep:   SAWA, Arr:   SCOH, Flight Time: 00:16:41, Errors:   0, Landing: B,   100 ft/min,  1.11g,   0 bounce(s)
+2018/10/ 6 Aircraft: ['Dornier Do 228']                      , Dep:   SCOH, Arr:   SCHR, Flight Time: 00:32:48, Errors:   1, Landing: A,    41 ft/min,  1.11g,   0 bounce(s)
+2018/10/ 6 Aircraft: ['Dornier Do 228']                      , Dep:   SCHR, Arr:   SCAS, Flight Time: 00:12:14, Errors:   0, Landing: B,   110 ft/min,  1.28g,   0 bounce(s)
+2018/10/ 8 Aircraft: ['Dornier Do 328-110']                  , Dep:   MT69, Arr:   KHLN, Flight Time: 00:03:34, Errors:   3, Landing: F,   543 ft/min,  1.90g,   0 bounce(s)
+2018/10/ 8 Aircraft: ['Dornier Do 328-110']                  , Dep:   KHLN, Arr:   MT69, Flight Time: 00:04:49, Errors:   1, Landing: C,   379 ft/min,  1.60g,   0 bounce(s)
+2018/10/ 8 Aircraft: ['Dornier Do 328-110']                  , Dep:   MT69, Arr:   KHLN, Flight Time: 00:13:39, Errors:   1, Landing: C,   309 ft/min,  1.29g,   0 bounce(s)
+2018/10/ 8 Aircraft: ['Dornier Do 328-110']                  , Dep:   KHLN, Arr:   MT69, Flight Time: 00:19:31, Errors:   2, Landing: F,   739 ft/min,  2.2 g,   1 bounce(s)
+2018/10/10 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   LSZH, Arr:   LKMH, Flight Time: 01:04:57, Errors:  11, Landing: B,   163 ft/min,  1.34g,   1 bounce(s)
+2018/10/10 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   LSZH, Arr:   ENBR, Flight Time: 01:10:06, Errors:   5, Landing: B,   172 ft/min,  1.86g,   1 bounce(s)
+2018/10/11 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   EGPE, Arr:   LSGG, Flight Time: 00:46:10, Errors:   3, Landing: B,   186 ft/min,  1.80g,   0 bounce(s)
+2018/10/15 Aircraft: ['Airbus A330-200 by JARDesign']        , Dep:   CYYR, Arr:   CYYT, Flight Time: 01:20:16, Errors:   7, Landing: B,   177 ft/min,  1.27g,   1 bounce(s)
+2018/10/16 Aircraft: ['Airbus A330-200 by JARDesign']        , Dep:   ENBR, Arr:   LSGG, Flight Time: 01:19:27, Errors:   3, Landing: C,   273 ft/min,  1.32g,   1 bounce(s)
+2018/10/16 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   LOWW, Arr:   LSGG, Flight Time: 00:50:35, Errors:   1, Landing: D,   410 ft/min,  2.24g,   1 bounce(s)
+2018/10/16 Aircraft: ['AB 412']                              , Dep:   S691, Arr:   32S2, Flight Time: 00:20:00, Errors:   3, Landing: C,   133 ft/min,  2.12g,   1 bounce(s)
+2018/10/16 Aircraft: ['AB 412']                              , Dep:   32S2, Arr:   MT69, Flight Time: 00:29:43, Errors:   4, Landing: B,   120 ft/min,  1.64g,   1 bounce(s)
+2018/10/18 Aircraft: ['Douglas C-47 Beta2.4']                , Dep:   LSMU, Arr:   LSGS, Flight Time: 00:11:39, Errors:   7, Landing: B,   199 ft/min,  1.49g,   2 bounce(s)
+2018/10/18 Aircraft: ['Douglas C-47 Beta2.4']                , Dep:   LSGS, Arr:   LSGE, Flight Time: 00:19:34, Errors:   9, Landing: D,   464 ft/min,  2.6 g,   2 bounce(s)
+2018/10/18 Aircraft: ['Douglas C-47 Beta2.4']                , Dep:   LSGE, Arr:   LSZC, Flight Time: 00:25:26, Errors:   4, Landing: F,   879 ft/min,  4.34g,   3 bounce(s)
+2018/10/23 Aircraft: ['Dornier Do 228']                      , Dep:   SCAS, Arr:   SCPH, Flight Time: 00:27:35, Errors:   0, Landing: A,    13 ft/min,  1.12g,   0 bounce(s)
+2018/10/23 Aircraft: ['Rotate MD-80']                        , Dep:   LGRP, Arr:   LOWI, Flight Time: 00:50:55, Errors:   5, Landing: F,   577 ft/min,  2.81g,   1 bounce(s)
+2018/10/27 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   EGNM, Arr:   EGNT, Flight Time: 00:34:58, Errors:   3, Landing: B,   113 ft/min,  1.79g,   0 bounce(s)
+2018/10/27 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   EGTP, Arr:   EGLA, Flight Time: 00:29:06, Errors:   0, Landing: B,   118 ft/min,  1.24g,   0 bounce(s)
+2018/10/27 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:    S97, Arr:    1S9, Flight Time: 00:26:00, Errors:   0, Landing: A,    54 ft/min,  1.8 g,   0 bounce(s)
+2018/10/27 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:    1S9, Arr:    S97, Flight Time: 00:22:18, Errors:   5, Landing: F,   521 ft/min,  3.32g,   2 bounce(s)
+2018/10/27 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:    S97, Arr:   WA68, Flight Time: 00:26:11, Errors:   1, Landing: C,   241 ft/min,  2.48g,   2 bounce(s)
+2018/10/27 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   WA68, Arr:    S98, Flight Time: 00:34:55, Errors:   3, Landing: B,   215 ft/min,  1.82g,   3 bounce(s)
+2018/10/28 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:    S98, Arr:   KPSC, Flight Time: 00:10:29, Errors:   0, Landing: B,    73 ft/min,  1.71g,   0 bounce(s)
+2018/10/28 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   KPSC, Arr:    00W, Flight Time: 00:25:05, Errors:   0, Landing: A,   148 ft/min,  1.20g,   1 bounce(s)
+2018/10/28 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:    00W, Arr:    16W, Flight Time: 00:38:34, Errors:   1, Landing: B,   109 ft/min,  1.17g,   1 bounce(s)
+2018/10/28 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:    16W, Arr:   KPSC, Flight Time: 00:47:29, Errors:   0, Landing: C,   316 ft/min,  2.36g,   3 bounce(s)
+2018/10/28 Aircraft: ['Dornier Do 228']                      , Dep:   SCPH, Arr:   SCST, Flight Time: 00:20:44, Errors:   0, Landing: A,    91 ft/min,  1.7 g,   0 bounce(s)
+2018/10/30 Aircraft: ['Dornier Do 228']                      , Dep:   SCST, Arr:   SCAC, Flight Time: 00:07:39, Errors:   2, Landing: C,   270 ft/min,  1.34g,   0 bounce(s)
+2018/11/ 1 Aircraft: ['Dornier Do 228']                      , Dep:   SCAC, Arr:   SCTI, Flight Time: 00:18:18, Errors:   0, Landing: B,   145 ft/min,  1.73g,   1 bounce(s)
+2018/11/ 1 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   KPSC, Arr:   WA68, Flight Time: 00:08:57, Errors:   0, Landing: C,   140 ft/min,  2.1 g,   2 bounce(s)
+2018/11/ 2 Aircraft: ['Dornier Do 228']                      , Dep:   SCTI, Arr:   SCSE, Flight Time: 00:20:53, Errors:   3, Landing: B,   160 ft/min,  1.19g,   0 bounce(s)
+2018/11/ 2 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   KPSC, Arr:   WA68, Flight Time: 00:23:51, Errors:   2, Landing: C,   341 ft/min,  1.53g,   3 bounce(s)
+2018/11/ 2 Aircraft: ['Bell 407']                            , Dep:   S691, Arr:   3U93, Flight Time: 00:11:32, Errors:   2, Landing: B,   242 ft/min,  1.93g,   0 bounce(s)
+2018/11/ 2 Aircraft: ['Bell 407']                            , Dep:   3U93, Arr:   9S54, Flight Time: 00:14:15, Errors:   5, Landing: B,   201 ft/min,  1.62g,   0 bounce(s)
+2018/11/ 2 Aircraft: ['Bell 407']                            , Dep:   9S54, Arr:   3U91, Flight Time: 00:05:45, Errors:   2, Landing: B,   148 ft/min,  1.43g,   0 bounce(s)
+2018/11/ 3 Aircraft: ['AB 412']                              , Dep:   38S3, Arr:   S691, Flight Time: 00:05:31, Errors:   4, Landing: B,   123 ft/min,  1.34g,   0 bounce(s)
+2018/11/ 4 Aircraft: ['EMB 110P1 Bandeirante']               , Dep:   SCSE, Arr:   SCES, Flight Time: 00:28:14, Errors:   4, Landing: A,   230 ft/min,  1.45g,   1 bounce(s)
+2018/11/ 4 Aircraft: ['EMB 110P1 Bandeirante']               , Dep:   SCES, Arr:   SCCF, Flight Time: 00:47:02, Errors:   1, Landing: D,   454 ft/min,  1.64g,   1 bounce(s)
+2018/11/ 4 Aircraft: ['EMB 110P1 Bandeirante']               , Dep:   SCCF, Arr:   SCAR, Flight Time: 01:12:46, Errors:   2, Landing: B,   104 ft/min,  1.46g,   2 bounce(s)
+2018/11/ 4 Aircraft: ['EMB 110P1 Bandeirante']               , Dep:   SCAR, Arr:   SPHO, Flight Time: 01:36:38, Errors:   9, Landing: C,   355 ft/min,  1.39g,   1 bounce(s)
+2018/11/ 4 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   SPHO, Arr:   SPSO, Flight Time: 00:28:16, Errors:   2, Landing: B,   171 ft/min,  1.54g,   1 bounce(s)
+2018/11/ 4 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   SPSO, Arr:   SPIM, Flight Time: 00:42:57, Errors:   0, Landing: A,    98 ft/min,  1.11g,   0 bounce(s)
+2018/11/ 4 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   SPJC, Arr:   SPHI, Flight Time: 00:14:02, Errors:   1, Landing: B,   174 ft/min,  1.15g,   0 bounce(s)
+2018/11/ 4 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   SPHI, Arr:   SEQM, Flight Time: 00:38:21, Errors:   2, Landing: B,   246 ft/min,  1.55g,   0 bounce(s)
+2018/11/ 5 Aircraft: ['Bombardier Challenger 300 XP11']      , Dep:   VEBD, Arr:   ZUUU, Flight Time: 00:33:39, Errors:   3, Landing: C,   378 ft/min,  1.20g,   1 bounce(s)
+2018/11/ 5 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   FALY, Arr:   FXSM, Flight Time: 00:18:06, Errors:   8, Landing: B,   232 ft/min,  1.34g,   0 bounce(s)
+2018/11/ 6 Aircraft: ['Bombardier Challenger 300 XP11']      , Dep:   ZUUU, Arr:   ZGNN, Flight Time: 00:39:36, Errors:   4, Landing: B,   180 ft/min,  1.39g,   0 bounce(s)
+2018/11/ 6 Aircraft: ['Bombardier Challenger 300 XP11']      , Dep:   ZGNN, Arr:   VDKH, Flight Time: 01:22:11, Errors:   2, Landing: B,   187 ft/min,  1.57g,   1 bounce(s)
+2018/11/ 6 Aircraft: ['Bombardier Challenger 300 XP11']      , Dep:   VDKH, Arr:   WMKJ, Flight Time: 02:59:43, Errors:   1, Landing: C,   282 ft/min,  1.74g,   0 bounce(s)
+2018/11/ 6 Aircraft: ['Bombardier Challenger 300 XP11']      , Dep:   TXKF, Arr:   TJSJ, Flight Time: 00:32:49, Errors:   1, Landing: B,   163 ft/min,  1.60g,   0 bounce(s)
+2018/11/ 8 Aircraft: ['AB 412']                              , Dep:   S691, Arr:   32S3, Flight Time: 00:06:53, Errors:   6, Landing: C,   170 ft/min,  2.35g,   0 bounce(s)
+2018/11/ 8 Aircraft: ['AB 412']                              , Dep:   32S3, Arr:  MT692, Flight Time: 00:20:51, Errors:   2, Landing: C,   266 ft/min,  1.4 g,   1 bounce(s)
+2018/11/11 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   CYXH, Arr:   PAJN, Flight Time: 00:43:23, Errors:   5, Landing: C,   265 ft/min,  1.9 g,   0 bounce(s)
+2018/11/11 Aircraft: ['Dornier Do 228']                      , Dep:   SEQU, Arr:   SEAM, Flight Time: 00:11:44, Errors:   5, Landing: A,    47 ft/min,  1.6 g,   0 bounce(s)
+2018/11/11 Aircraft: ['Dornier Do 228']                      , Dep:   SEAM, Arr:   MPMG, Flight Time: 00:20:29, Errors:   1, Landing: B,   194 ft/min,  1.36g,   0 bounce(s)
+2018/11/11 Aircraft: ['Dornier Do 228']                      , Dep:   MPMG, Arr:   MNMG, Flight Time: 00:52:56, Errors:   0, Landing: A,    91 ft/min,  1.17g,   0 bounce(s)
+2018/11/11 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   KPDX, Arr:   PAKT, Flight Time: 01:06:44, Errors:   1, Landing: C,   289 ft/min,  1.19g,   3 bounce(s)
+2018/11/12 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   09AZ, Arr:   KFHU, Flight Time: 00:19:00, Errors:   1, Landing: B,   160 ft/min,  1.7 g,   0 bounce(s)
+2018/11/13 Aircraft: ['AB 412']                              , Dep:   32S2, Arr:  MT302, Flight Time: 00:07:32, Errors:   1, Landing: B,   135 ft/min,  1.50g,   1 bounce(s)
+2018/11/13 Aircraft: ['Dornier Do 228']                      , Dep:   MNMG, Arr:   MSLP, Flight Time: 00:22:26, Errors:   0, Landing: B,   235 ft/min,  1.91g,   0 bounce(s)
+2018/11/14 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   PAFA, Arr:   PAJN, Flight Time: 01:01:12, Errors:   3, Landing: A,    71 ft/min,  1.16g,   0 bounce(s)
+2018/11/14 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   PAJN, Arr:   CYLW, Flight Time: 00:51:57, Errors:   1, Landing: D,   437 ft/min,  2.38g,   1 bounce(s)
+2018/11/16 Aircraft: ['Dornier Do 228']                      , Dep:   MSLP, Arr:   MGGT, Flight Time: 00:10:30, Errors:   0, Landing: B,   221 ft/min,  1.28g,   0 bounce(s)
+2018/11/18 Aircraft: ['AB 412']                              , Dep:  MT302, Arr:   32S2, Flight Time: 00:06:35, Errors:   3, Landing: B,    94 ft/min,  1.83g,   0 bounce(s)
+2018/11/18 Aircraft: ['AB 412']                              , Dep:   MT69, Arr:   MT69, Flight Time: 00:00:27, Errors:   1, Landing: D,   102 ft/min,  3.6 g,   0 bounce(s)
+2018/11/18 Aircraft: ['AB 412']                              , Dep:   MT69, Arr:   32S3, Flight Time: 00:05:12, Errors:   2, Landing: C,   145 ft/min,  2.10g,   0 bounce(s)
+2018/11/18 Aircraft: ['AB 412']                              , Dep:   32S3, Arr:   S691, Flight Time: 00:05:02, Errors:   3, Landing: B,   148 ft/min,  1.41g,   0 bounce(s)
+2018/11/20 Aircraft: ['Bombardier Challenger 300 XP11']      , Dep:   CYYR, Arr:   CYDF, Flight Time: 00:22:13, Errors:   9, Landing: B,   143 ft/min,  1.20g,   0 bounce(s)
+2018/11/20 Aircraft: ['Bombardier Challenger 300 XP11']      , Dep:   CYMT, Arr:   KROC, Flight Time: 00:17:38, Errors:   3, Landing: A,    90 ft/min,  1.19g,   0 bounce(s)
+2018/11/20 Aircraft: ['727 Series Pro V3 727-200Adv']        , Dep:   NV63, Arr:   CYLW, Flight Time: 01:06:13, Errors:   3, Landing: B,   198 ft/min,  1.62g,   2 bounce(s)
+2018/11/24 Aircraft: ['727 Series Pro V3 727-200Adv']        , Dep:   CYXE, Arr:   CYVR, Flight Time: 01:11:13, Errors:   3, Landing: B,   135 ft/min,  1.42g,   1 bounce(s)
+2018/12/ 4 Aircraft: ['AB 412']                              , Dep:   S691, Arr:   3U52, Flight Time: 00:08:39, Errors:   2, Landing: D,   235 ft/min,  3.37g,   2 bounce(s)
+2018/12/ 4 Aircraft: ['AB 412']                              , Dep:   3U52, Arr:   8S02, Flight Time: 00:06:45, Errors:   3, Landing: B,   175 ft/min,  1.82g,   0 bounce(s)
+2018/12/ 4 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   MGGT, Arr:   MM1N, Flight Time: 00:19:12, Errors:   2, Landing: B,   194 ft/min,  1.52g,   2 bounce(s)
+2018/12/19 Aircraft: ['AB 412']                              , Dep:   S272, Arr:   8S02, Flight Time: 00:09:10, Errors:   5, Landing: B,   232 ft/min,  1.94g,   0 bounce(s)
+2018/12/19 Aircraft: ['AB 412']                              , Dep:   8S02, Arr:   8U22, Flight Time: 00:08:04, Errors:   7, Landing: F,   511 ft/min,  4.23g,   1 bounce(s)
+2018/12/19 Aircraft: ['AB 412']                              , Dep:   8U22, Arr:   8S01, Flight Time: 00:06:15, Errors:   5, Landing: F,   526 ft/min,  2.24g,   1 bounce(s)
+2018/12/20 Aircraft: ['Bell 407']                            , Dep:   3U52, Arr:   S691, Flight Time: 00:06:39, Errors:   2, Landing: B,   166 ft/min,  1.18g,   0 bounce(s)
+2018/12/20 Aircraft: ['Bell 407']                            , Dep:   S691, Arr:   32S2, Flight Time: 00:09:20, Errors:   0, Landing: B,   134 ft/min,  1.46g,   0 bounce(s)
+2018/12/20 Aircraft: ['Bell 407']                            , Dep:   32S2, Arr:   MT69, Flight Time: 00:07:59, Errors:   1, Landing: A,    29 ft/min,  1.12g,   0 bounce(s)
+2018/12/20 Aircraft: ['Bell 407']                            , Dep:   MT69, Arr:   32S3, Flight Time: 00:08:01, Errors:   0, Landing: B,   141 ft/min,  1.80g,   1 bounce(s)
+2018/12/20 Aircraft: ['Bell 407']                            , Dep:   32S3, Arr:   S691, Flight Time: 00:06:40, Errors:   1, Landing: B,   114 ft/min,  1.38g,   0 bounce(s)
+2018/12/20 Aircraft: ['Bell 407']                            , Dep:   S691, Arr:   3U93, Flight Time: 00:05:48, Errors:   0, Landing: C,   118 ft/min,  2.27g,   0 bounce(s)
+2018/12/20 Aircraft: ['Bell 407']                            , Dep:   3U93, Arr:   7S13, Flight Time: 01:14:23, Errors:   0, Landing: B,   155 ft/min,  1.58g,   0 bounce(s)
+2018/12/21 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   WA68, Arr:   KPSC, Flight Time: 00:23:35, Errors:   9, Landing: D,   136 ft/min,  3.7 g,   3 bounce(s)
+2018/12/21 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   KPSC, Arr:   OR64, Flight Time: 00:00:20, Errors:   6, Landing: C,  1015 ft/min,  2.11g,   2 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:   7S14, Arr:   3U93, Flight Time: 00:05:16, Errors:   0, Landing: A,    67 ft/min,  1.19g,   0 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:   3U93, Arr:   9S53, Flight Time: 00:06:22, Errors:   3, Landing: A,    67 ft/min,  1.15g,   1 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:   9S53, Arr:   3U91, Flight Time: 00:04:29, Errors:   2, Landing: A,    89 ft/min,  1.38g,   0 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:   3U91, Arr:  MT183, Flight Time: 00:30:57, Errors:   1, Landing: B,   170 ft/min,  1.59g,   1 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:  MT183, Arr:   3U92, Flight Time: 00:38:09, Errors:   0, Landing: C,   171 ft/min,  2.46g,   0 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:   3U92, Arr:   S691, Flight Time: 00:06:50, Errors:   2, Landing: A,    92 ft/min,  1.18g,   0 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:   S691, Arr:   8U82, Flight Time: 00:06:07, Errors:   1, Landing: B,   210 ft/min,  1.60g,   2 bounce(s)
+2018/12/21 Aircraft: ['Bell 407']                            , Dep:   8U82, Arr:  MT072, Flight Time: 00:09:18, Errors:   2, Landing: F,   211 ft/min,  5.33g,   1 bounce(s)
+2018/12/22 Aircraft: ['Bell 407']                            , Dep:   6S31, Arr:  MT073, Flight Time: 00:14:29, Errors:   4, Landing: C,   222 ft/min,  2.61g,   1 bounce(s)
+2018/12/22 Aircraft: ['Bell 407']                            , Dep:  MT073, Arr:   8U83, Flight Time: 00:05:43, Errors:   0, Landing: B,   196 ft/min,  1.63g,   0 bounce(s)
+2018/12/22 Aircraft: ['Bell 407']                            , Dep:   8U83, Arr:   S691, Flight Time: 00:05:47, Errors:   0, Landing: C,   257 ft/min,  1.77g,   1 bounce(s)
+2018/12/26 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:    07E, Arr:   KPGA, Flight Time: 00:10:25, Errors:   2, Landing: B,   108 ft/min,  1.72g,   1 bounce(s)
+2018/12/26 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   KPGA, Arr:   KGNG, Flight Time: 00:25:59, Errors:  18, Landing: A,    75 ft/min,  1.19g,   0 bounce(s)
+2018/12/27 Aircraft: ['Dornier Do 228']                      , Dep:   MM1N, Arr:   MMZH, Flight Time: 00:19:12, Errors:   1, Landing: B,   197 ft/min,  1.55g,   0 bounce(s)
+2018/12/27 Aircraft: ['Dornier Do 228']                      , Dep:   MMZH, Arr:   MMCN, Flight Time: 00:55:03, Errors:   0, Landing: B,   151 ft/min,  1.17g,   0 bounce(s)
+2018/12/28 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   MMCN, Arr:   KCHD, Flight Time: 00:22:46, Errors:   0, Landing: B,   249 ft/min,  1.37g,   1 bounce(s)
+2018/12/28 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   KCHD, Arr:    5S6, Flight Time: 00:48:17, Errors:   2, Landing: B,   241 ft/min,  1.80g,   0 bounce(s)
+2018/12/29 Aircraft: ['Bell 407']                            , Dep:   CZST, Arr:   PAKT, Flight Time: 00:12:59, Errors:   1, Landing: B,   164 ft/min,  1.55g,   0 bounce(s)
+2018/12/30 Aircraft: ['Dornier Do 228']                      , Dep:    5S6, Arr:   KEUG, Flight Time: 00:17:12, Errors:   3, Landing: B,   195 ft/min,  1.19g,   0 bounce(s)
+2018/12/30 Aircraft: ['Dornier Do 228']                      , Dep:   KEUG, Arr:   CYQQ, Flight Time: 00:35:25, Errors:   2, Landing: B,   121 ft/min,  1.16g,   0 bounce(s)
+2019/ 1/ 2 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   CYQQ, Arr:   CYZT, Flight Time: 00:23:18, Errors:   0, Landing: B,   125 ft/min,  1.36g,   0 bounce(s)
+2019/ 1/ 2 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   CYZT, Arr:   PANT, Flight Time: 00:37:06, Errors:   3, Landing: A,    95 ft/min,  1.22g,   1 bounce(s)
+2019/ 1/ 2 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   PANT, Arr:   PAKT, Flight Time: 01:12:08, Errors:   0, Landing: B,   115 ft/min,  1.18g,   1 bounce(s)
+2019/ 1/ 2 Aircraft: ['Bae Jetstream 32. X-Plane 11 V.1.1']  , Dep:   PAKT, Arr:   PAJN, Flight Time: 00:14:34, Errors:   1, Landing: B,   241 ft/min,  1.48g,   0 bounce(s)
+2019/ 1/ 2 Aircraft: ['Dornier Do 228']                      , Dep:   NONE, Arr:   PAYA, Flight Time: 00:12:25, Errors:   0, Landing: A,    82 ft/min,  1.14g,   0 bounce(s)
+2019/ 1/ 3 Aircraft: ['Dornier Do 228']                      , Dep:   PAYA, Arr:   PAVD, Flight Time: 00:27:15, Errors:   4, Landing: A,    86 ft/min,  1.5 g,   0 bounce(s)
+2019/ 1/ 3 Aircraft: ['Dornier Do 228']                      , Dep:   PAVD, Arr:   PADQ, Flight Time: 00:13:12, Errors:   1, Landing: B,   139 ft/min,  1.50g,   0 bounce(s)
+2019/ 1/ 3 Aircraft: ['Dornier Do 228']                      , Dep:   PADQ, Arr:   PACD, Flight Time: 00:15:21, Errors:   1, Landing: A,    47 ft/min,  1.2 g,   0 bounce(s)
+2019/ 1/ 3 Aircraft: ['Dornier Do 228']                      , Dep:   PACD, Arr:   PAAM, Flight Time: 01:19:03, Errors:   1, Landing: D,   413 ft/min,  2.0 g,   0 bounce(s)
+2019/ 1/ 3 Aircraft: ['Dornier Do 228']                      , Dep:   PAAK, Arr:   PADK, Flight Time: 00:16:26, Errors:   0, Landing: B,   106 ft/min,  1.46g,   0 bounce(s)
+2019/ 1/ 4 Aircraft: ['Dornier Do 228']                      , Dep:   PADK, Arr:    ATU, Flight Time: 00:23:39, Errors:   2, Landing: A,    78 ft/min,  1.13g,   0 bounce(s)
+2019/ 1/ 4 Aircraft: ['Dornier Do 228']                      , Dep:   PATU, Arr:   RJCN, Flight Time: 01:01:26, Errors:   2, Landing: C,   324 ft/min,  1.47g,   0 bounce(s)
+2019/ 2/ 3 Aircraft: ['Bonanza F33A for X-Plane 11']         , Dep:   KGNG, Arr:    U00, Flight Time: 00:22:13, Errors:   1, Landing: B,   181 ft/min,  1.26g,   0 bounce(s)
+2019/ 2/ 5 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   PAJN, Arr:   PAKT, Flight Time: 00:51:16, Errors:   1, Landing: C,   250 ft/min,  1.70g,   1 bounce(s)
+2019/ 2/ 5 Aircraft: ['Dornier Do 228']                      , Dep:   RJCN, Arr:   RJCK, Flight Time: 00:09:40, Errors:   0, Landing: B,   242 ft/min,  1.16g,   0 bounce(s)
+2019/ 2/10 Aircraft: ['A plane, with wings, it flies, sometim, Dep:   CYQU, Arr:   CYLW, Flight Time: 00:54:38, Errors:   0, Landing: C,   232 ft/min,  2.37g,   1 bounce(s)
+2019/ 2/11 Aircraft: ['Rotate MD-80']                        , Dep:   PAKT, Arr:   CYLW, Flight Time: 01:28:06, Errors:   3, Landing: B,   176 ft/min,  1.60g,   0 bounce(s)
+2019/ 2/14 Aircraft: Rotate MD-80                            , Dep:   NONE, Arr:   MGGT, Flight Time: 00:03:18, Errors:   4, Landing: C,   259 ft/min,  2.1g,    1 bounce(s)
+2019/ 2/17 Aircraft: Rotate MD-80                            , Dep:   SVMI, Arr:   TTPP, Flight Time: 00:59:09, Errors:   1, Landing: B,   131 ft/min,  1.5g,    3 bounce(s)
+2019/ 2/21 Aircraft: King Air C90                            , Dep:   NONE, Arr:   FYWH, Flight Time: 00:02:52, Errors:  11, Landing: F,   691 ft/min,  2.30g,   1 bounce(s)
+2019/ 2/21 Aircraft: King Air C90                            , Dep:   FYWH, Arr:   FYWH, Flight Time: 00:02:42, Errors:   2, Landing: D,   460 ft/min,  3.32g,   0 bounce(s)
+2019/ 2/21 Aircraft: King Air C90                            , Dep:   FYWH, Arr:   FYWH, Flight Time: 00:01:37, Errors:   1, Landing: F,  1062 ft/min,  5.91g,   0 bounce(s)
+2019/ 2/21 Aircraft: King Air C90                            , Dep:   FYWH, Arr:   FYWH, Flight Time: 00:02:18, Errors:   0, Landing: B,   287 ft/min,  0.95g,   1 bounce(s)
+2019/ 2/21 Aircraft: King Air C90                            , Dep:   FYWH, Arr:   FYWH, Flight Time: 00:08:40, Errors:   2, Landing: F,   488 ft/min,  4.01g,   1 bounce(s)
+2019/ 2/21 Aircraft: King Air C90                            , Dep:   FY2P, Arr:   FY2P, Flight Time: 00:02:47, Errors:   1, Landing: F,   799 ft/min,  2.85g,   0 bounce(s)
+2019/ 2/21 Aircraft: 727 Series Pro V3 727-200Adv            , Dep:   CYVR, Arr:   PAJN, Flight Time: 01:15:47, Errors:   3, Landing: B,   107 ft/min,  1.38g,   0 bounce(s)
+2019/ 2/22 Aircraft: Bae Jetstream 32. X-Plane 11 V.1.1      , Dep:   RJCK, Arr:   RJAH, Flight Time: 00:39:53, Errors:   3, Landing: B,   167 ft/min,  1.39g,   0 bounce(s)
+2019/ 2/23 Aircraft: Boeing Twinjet 732                      , Dep:   NZQN, Arr:   NZCH, Flight Time: 00:42:40, Errors:   4, Landing: B,   176 ft/min,  1.17g,   1 bounce(s)
+2019/ 2/24 Aircraft: Bell 407                                , Dep:   3U53, Arr:   S691, Flight Time: 00:07:27, Errors:   1, Landing: A,    51 ft/min,  1.19g,   0 bounce(s)
+2019/ 2/24 Aircraft: Bell 407                                , Dep:   S691, Arr:   3U93, Flight Time: 00:07:37, Errors:   0, Landing: B,    69 ft/min,  1.63g,   2 bounce(s)
+2019/ 2/24 Aircraft: Bell 407                                , Dep:   3U93, Arr:   9S55, Flight Time: 00:05:50, Errors:   2, Landing: A,    90 ft/min,  1.40g,   2 bounce(s)
+2019/ 3/5 Aircraft: Boeing Twinjet 732                      , Dep:   LIPZ, Arr:   LSGG, Flight Time: 00:41:50, Errors:   1, Landing: C,   341 ft/min,  2.36g,   3 bounce(s)
+2019/ 3/5 Aircraft: AB 412                                  , Dep:   3U93, Arr:   3U93, Flight Time: 00:00:13, Errors:   0, Landing: C,   123 ft/min,  2.15g,   1 bounce(s)
+2019/ 3/5 Aircraft: AB 412                                  , Dep:   3U93, Arr:   9S53, Flight Time: 00:06:42, Errors:   0, Landing: B,   103 ft/min,  1.50g,   0 bounce(s)
+2019/ 3/5 Aircraft: AB 412                                  , Dep:   9S53, Arr:   3U91, Flight Time: 00:04:58, Errors:   0, Landing: A,    28 ft/min,  1.49g,   1 bounce(s)
+2019/ 3/5 Aircraft: Bell-429 by timber61                    , Dep:   3U91, Arr:   S691, Flight Time: 00:06:44, Errors:   1, Landing: A,    13 ft/min,  1.03g,   1 bounce(s)
+2019/ 3/5 Aircraft: Bell-429 by timber61                    , Dep:   S691, Arr:  MT402, Flight Time: 00:08:16, Errors:   1, Landing: A,    85 ft/min,  1.34g,   0 bounce(s)
+2019/ 3/5 Aircraft: Bell 407                                , Dep:   3U91, Arr:  MT183, Flight Time: 00:07:53, Errors:   0, Landing: D,   124 ft/min,  3.62g,   2 bounce(s)
+2019/ 3/5 Aircraft: Bell 407                                , Dep:  MT183, Arr:   3U93, Flight Time: 00:07:00, Errors:   0, Landing: B,   142 ft/min,  1.37g,   0 bounce(s)
+2019/ 3/7 Aircraft: Bell 407                                , Dep:   3U91, Arr:   S691, Flight Time: 00:08:07, Errors:   0, Landing: B,   121 ft/min,  1.18g,   1 bounce(s)
+2019/ 3/7 Aircraft: Bell 407                                , Dep:   3U91, Arr:   S691, Flight Time: 00:06:48, Errors:   2, Landing: A,    97 ft/min,  1.23g,   1 bounce(s)
+2019/ 3/7 Aircraft: Bell 407                                , Dep:   3U91, Arr:  MT402, Flight Time: 00:18:09, Errors:   1, Landing: B,   153 ft/min,  1.46g,   0 bounce(s)

@@ -32,11 +32,13 @@
          ((((unsigned int)value)>> 8) & 0x0000FF00)  | \
          ((((unsigned int)value)>>24) & 0x000000FF))
 
-#define FAIL(X) { XPLMDebugString(X); free(mem); return 0; }
+#define FAIL(X) { IvyDebugString(X); free(mem); return 0; }
 
 #define RIFF_ID 0x46464952			// 'RIFF'
 #define FMT_ID  0x20746D66			// 'FMT '
 #define DATA_ID 0x61746164			// 'DATA'
+
+#define XPSOUND_INVALID_SOUND 0xFFFFFFFF
 
 // Wave files are RIFF files, which are "chunky" - each section has an ID and a length.  This lets us skip
 // things we can't understand to find the parts we want.  This header is common to all RIFF chunks.
@@ -68,24 +70,25 @@ class XPSound
 	ALCdevice *		mpSoundDevice = NULL;			// We make our own device and context to play sound through.
 	ALCcontext *	mpSoundCtx = NULL;
 
-	char			mp_mp3_path[2048] = "";
+	//char			mp_mp3_path[2048] = "";
 
 	char *		WaveFindChunk(char * file_begin, char * file_end, int desired_id, int swapped);
 	char *		WaveChunkEnd(char * chunk_start, int swapped);
 	void		CheckOpenALError(void);
-	ALuint		LoadWave(char * file_name);
+	ALuint		LoadWave(const char * file_name);
 public:
 				XPSound();
 				~XPSound();
 	// Initialize OpenAL
-	int			InitSound(char * p_file_path);
+	int			InitSound();
 	// Load a Wave file OpenAL
 	ALuint		CreateBuffer(std::string &file_name);
 	void		RemoveBuffer(ALuint ali_buffer_source);
 	ALuint		CreateSound(ALenum looping);
 	bool		PlaySingleSound(ALuint ali_sound_source, ALuint ali_buffer_source);
 	bool		IsPlayingSound(ALuint ali_sound_source);
-	void		SetSoundPitch(ALuint ali_sound_source, float pitch);
+	void		SetSoundGain(ALuint ali_sound_source, float gain);
 	void		RemoveSound(ALuint ali_sound_source);
+	void		RemoveAllBuffers();
 };
 

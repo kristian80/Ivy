@@ -13,13 +13,32 @@
 
 class MyIvyConfiguration
 {
+public:
 	std::string m_system_path = "";
-	std::string m_mp3_dir = "IvyMP3s";
+	std::string m_mp3_dir = "IvyAudio";
 	std::string m_mp3_path = "";
 	std::string m_number_path = "";
 	std::string m_ini_path = "";
 	std::string m_config_path = "";
 	std::string m_logbook_path = "";
+	std::string m_errorlog_path = "";
+	std::string m_dir_sep = "/";
+	std::string m_output_path = "";
+
+	std::vector<std::string> m_audio_names;
+	std::vector<std::string> m_audio_dirs;
+
+	bool m_ivy_enable = true;
+
+	bool m_callouts_enable = true;
+	bool m_errors_enable = true;
+	bool m_baro_is_error = false;
+
+	bool m_pre_warnings = false;
+	bool m_ouch_enabled = true;
+
+	bool m_passengers_screaming = true;
+	bool m_passengers_applause = true;
 
 	float m_data_rate = 0.1;
 	int  m_disable_after_loading = 10; //debug, 20 = normal
@@ -82,21 +101,18 @@ class MyIvyConfiguration
 	int m_log_window_entries = 15;
 	int m_log_afc_name_length = 40;
 
+	int m_aoc_count_total = 20;
+	int m_aoc_level_high = 10;
+	int m_aoc_level_med = 7;
+	int m_aoc_level_low = 3;
 
-
-
-
-
-
-
-
-
-public:
 	MyIvyConfiguration();
 	~MyIvyConfiguration();
 
 	void WriteConfig();
 	void ReadConfig();
+
+	void SetAudioDirectory();
 
 };
 

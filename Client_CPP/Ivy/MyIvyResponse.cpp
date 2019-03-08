@@ -9,7 +9,10 @@
 
 
 
-MyIvyResponse::MyIvyResponse(std::string event_name, std::string mp3_path, int active_on_load, float minimum_occ, float deactivate_time, int is_error, std::list<MyIvyResponse> *ivy_object_list, ALuint sound_channel, XPSound *xpSound)
+MyIvyResponse::MyIvyResponse(std::string event_name, std::string mp3_path, int active_on_load, float minimum_occ, float deactivate_time, int is_error, std::vector<MyIvyResponse*> *ivy_object_list, ALuint sound_channel, XPSound *xpSound, std::vector<std::string> &error_list, bool *p_enable, std::string error_string):
+	m_error_list(error_list),
+	m_error_string(error_string),
+	m_error_history()
 {
 	m_event_name = event_name;
 	m_is_error = is_error;
@@ -21,28 +24,43 @@ MyIvyResponse::MyIvyResponse(std::string event_name, std::string mp3_path, int a
 	m_channel_number = sound_channel;
 	m_ivyChannel = sound_channel;
 	mXPSound = xpSound;
+
+	m_p_enable = p_enable;
 	
-	std::list<std::string> m_play_files;
+	//std::list<std::string> m_play_files;
 	
 	// Append this response to the ivy_object_list
-	ivy_object_list->push_back(*this);
+	ivy_object_list->push_back(this);
 
-	for (int file_number = 1; file_number <= IVY_RESPONSE_MAX_FILE; ++file_number)
-	{
-		std::string sound_file_path = mp3_path + event_name + "_" + std::to_string(file_number) + ".wav";
-		if (file_exists(sound_file_path))
-		{
-			m_play_files.push_back(sound_file_path);
-			ALuint act_sound = xpSound->CreateBuffer(sound_file_path);
-
-			m_sounds.push_back(act_sound);
-		}
-	}
+	LoadSound(mp3_path, xpSound);
+	
 }
 
 
 MyIvyResponse::~MyIvyResponse()
 {
+}
+
+void MyIvyResponse::LoadSound(std::string mp3_path, XPSound *xpSound)
+{
+
+	m_sounds.clear();
+
+	for (int file_number = 1; file_number <= IVY_RESPONSE_MAX_FILE; ++file_number)
+	{
+		std::string sound_file_path = mp3_path + m_event_name + "_" + std::to_string(file_number) + ".wav";
+		if (file_exists(sound_file_path))
+		{
+			//m_play_files.push_back(sound_file_path);
+			ALuint act_sound = xpSound->CreateBuffer(sound_file_path);
+
+			m_sounds.push_back(act_sound);
+		}
+	}
+
+	ivy_output_file << "IvyResponse " << m_event_name << " loaded sound files : " << m_sounds.size() << std::endl;
+	ivy_output_file.flush();
+
 }
 
 void MyIvyResponse::Activate(float time)
@@ -90,9 +108,11 @@ void MyIvyResponse::SetAsPlayed(float time)
 int MyIvyResponse::Play(void)
 {
 	int random_number = 0;
-	if (m_sounds.size() == 0)
+	if ((m_sounds.size() == 0) || (*m_p_enable == false))
 	{
 		m_played = 1;
+		m_error_count = m_error_count + 1;
+		if (m_is_error > 0) m_error_list.push_back(GetErrorString());
 		return 1;
 	}
 
@@ -102,8 +122,7 @@ int MyIvyResponse::Play(void)
 	if (m_played == 1)
 		return 0;
 
-	if (m_is_error > 0)
-		m_error_count = m_error_count + 1;
+		
 
 	if (m_sounds.size() > 1)
 		random_number = rand() % m_sounds.size();
@@ -111,7 +130,57 @@ int MyIvyResponse::Play(void)
 		random_number = 0;
 
 	if (mXPSound->PlaySingleSound(m_ivyChannel, m_sounds.at(random_number)) == true)
+	{
+		if (m_is_error > 0) m_error_list.push_back(GetErrorString());
+
+		ivy_output_file << "IvyResponse played: " << m_event_name << std::endl;
+		ivy_output_file.flush();
+
+		m_error_count = m_error_count + 1;
 		m_played = 1;
+	}
 
 	return m_played;
+}
+
+std::string MyIvyResponse::GetErrorString(void)
+{
+	std::string text = "";
+
+	std::string s_value = std::to_string((int)(m_time_activated / 3600));
+	if (s_value.size() < 2) s_value = "0" + s_value;
+	text += s_value + ":";
+
+	s_value = std::to_string((int)((((int) m_time_activated) % 3600) / 60));
+	if (s_value.size() < 2) s_value = "0" + s_value;
+	text += s_value + ":";
+
+	s_value = std::to_string(((int)m_time_activated) % 60);
+	if (s_value.size() < 2) s_value = "0" + s_value;
+	text += s_value + " - " + m_error_string;
+
+	return text;
+}
+
+void MyIvyResponse::Archive() 
+{ 
+	m_error_history.push_back(m_error_count); 
+	m_error_count = 0; 
+}
+
+int MyIvyResponse::CalcAOCCount(int m_aoc_flight_count)
+{
+	m_aoc_count = 0;
+
+	if (m_is_error > 0)
+	{
+		int index = 0;
+		if (m_aoc_flight_count < m_error_history.size())
+			index = m_error_history.size() - m_aoc_flight_count;
+
+		for (; index < m_error_history.size(); index++)
+			m_aoc_count += m_error_history[index];
+	}
+
+	return m_aoc_count;
 }

@@ -1,8 +1,25 @@
 #pragma once
+#include "Ivy.h"
+#include "MyIvyConfiguration.h"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////;
+// IvyPassengers
+//
+// Small class to make our passenger noise
+
 class IvyPassengers
 {
+	MyIvyConfiguration *mp_ivyConfig = NULL;
+	ALuint m_passengerChannel = 0;
+	ALuint m_screamSound = 0;
+	float m_gain = 0;
+	float m_gain_step = 0.05;
+	bool m_is_screaming = false;
+	XPSound *mXPSound;
+
 public:
-	IvyPassengers();
+	IvyPassengers(MyIvyConfiguration *pivyConfig, ALuint channel, XPSound *xpSound);
 	~IvyPassengers();
+	void LoadSound(MyIvyConfiguration *pivyConfig, ALuint channel, XPSound *xpSound);
+	void MakeScream(bool screaming, float gain);
 };
 

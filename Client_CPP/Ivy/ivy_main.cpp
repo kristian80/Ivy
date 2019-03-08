@@ -6,6 +6,8 @@
 #include "XPLMProcessing.h"
 #include "XPLMPlugin.h"
 #include "XPSound.h"
+#include "MyIvy.h"
+#include "Ivy.h"
 
 // OS X: we use this to convert our file path.
 #if APL
@@ -20,11 +22,8 @@
 /**************************************************************************************************************
  * Global Variables 
  **************************************************************************************************************/
-
-static XPSound *pIvySound = NULL;
-ALuint my_buffer = 0;
-ALuint my_sound = 0;
-char * p_mp3_path = "";
+MyIvy * pIvy;
+std::ofstream ivy_output_file;
 
 
 
@@ -54,42 +53,26 @@ int ConvertPath(const char * inPath, char * outPath, int outPathMaxLen) {
 
 static float InitPlugin(float elapsed, float elapsed_sim, int counter, void * ref)
 {
-	XPLMDebugString("Ivy: Initializing.\n");
-	pIvySound = new XPSound();
-
-	// Get MP3 Directory
-	char p_dir_path[2048];
-	char dirchar = *XPLMGetDirectorySeparator();
-	XPLMGetPluginInfo(XPLMGetMyID(), NULL, p_dir_path, NULL, NULL);
-	char * p_char = p_dir_path;
-	char * p_slash = p_char;
-	while (*p_char)
-	{
-		if (*p_char == dirchar) p_slash = p_char;
-		++p_char;
-	}
-	++p_slash;
-	*p_slash = 0;
-
-
-
-	pIvySound->InitSound(p_dir_path);
-	my_sound = pIvySound->CreateSound(AL_FALSE);
-	//my_buffer = pIvySound->CreateBuffer("sound.wav");
+	IvyDebugString("Ivy: Initializing.\n");
+	pIvy->IvyStart();
 	return 0.0f;
 }
 
 PLUGIN_API int XPluginStart(char * name, char * sig, char * desc)
 {
-	XPLMDebugString("Ivy: Startup.\n");
-	strcpy(name, "Ivy, the nagging co-pilot");
-	strcpy(sig, "xpsdk.plugin.ivy");
-	strcpy(desc, "Tells you when not flying properly");
+	IvyDebugString("Ivy: Startup.\n");
+	strcpy(name, "Ivy");
+	strcpy(sig, "k80.Ivy");
+	strcpy(desc, "The nagging co-pilot");
+
+	ivy_output_file.open("IvyLog.txt");
+
+	pIvy = new MyIvy();
 
 	if (sizeof(unsigned int) != 4 ||
 		sizeof(unsigned short) != 2)
 	{
-		XPLMDebugString("Ivy: This plugin was compiled with a compiler with weird type sizes.\n");
+		IvyDebugString("Ivy: This plugin was compiled with a compiler with weird type sizes.\n");
 		return 0;
 	}
 
@@ -104,34 +87,81 @@ PLUGIN_API int XPluginStart(char * name, char * sig, char * desc)
 
 PLUGIN_API void XPluginStop(void)
 {
-	if (pIvySound)	delete pIvySound;
+	pIvy->IvyStop();
+	delete pIvy;
+	ivy_output_file.close();
 }
 
 PLUGIN_API int XPluginEnable(void)
 {
-	
+	pIvy->IvyEnable();
 	return 1;
 }
 
 PLUGIN_API void XPluginDisable(void)
 {
+	pIvy->IvyDisable();
 }
+
+
 
 PLUGIN_API void XPluginReceiveMessage(XPLMPluginID from, int msg, void * p)
 {
-	switch (msg) {
-	case XPLM_MSG_PLANE_LOADED:
-		if (pIvySound)
-		{
-			XPLMDebugString("Ivy: Playing Sound.\n");
-			// An example of actually playing the sound.  First we change to our 
-			// context, then we play the sound at pitch, then we change the context back.
-			// We check for null contexts both for us (our init failed) and the old context
-			// (X-plane's sound failed).
+	pIvy->IvyReceiveMessage(from, msg, p);
+}
 
-			pIvySound->PlaySingleSound(my_sound, my_buffer);
-			
-		}
-		break;
-	}
+int WrapIvyVSpeedHandler(XPWidgetMessage  inMessage, XPWidgetID  inWidget, intptr_t inParam1, intptr_t inParam2)
+{
+	return pIvy->IvyVSpeedHandler(inMessage,inWidget,inParam1,inParam2);
+}
+int WrapIvyLogbookHandler(XPWidgetMessage  inMessage, XPWidgetID  inWidget, intptr_t inParam1, intptr_t inParam2)
+{
+	return pIvy->IvyLogbookHandler(inMessage,inWidget,inParam1,inParam2);
+}
+int WrapIvyLogbookScrollHandler(XPWidgetMessage  inMessage, XPWidgetID  inWidget, intptr_t inParam1, intptr_t inParam2)
+{
+	return pIvy->IvyLogbookScrollHandler(inMessage,inWidget,inParam1,inParam2);
+}
+
+void WrapIvyDrawOutputWindow(XPLMWindowID in_window_id, void * in_refcon)
+{
+	return pIvy->IvyDrawOutputWindow(in_window_id,in_refcon);
+}
+void WrapIvyMenuHandler(void * in_menu_ref, void * in_item_ref)
+{
+	return pIvy->IvyMenuHandler(in_menu_ref,in_item_ref);
+}
+int WrapSayBaroCallback(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
+{
+	return pIvy->SayBaroCallback(cmd,phase,refcon);
+}
+int WrapSayWindCallback(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
+{
+	return pIvy->SayWindCallback(cmd,phase,refcon);
+}
+int WrapAnnouncementCallback(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
+{
+	return pIvy->AnnouncementCallback(cmd,phase,refcon);
+}
+int WrapResetIvyCallback(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
+{
+	return pIvy->ResetIvyCallback(cmd,phase,refcon);
+}
+int WrapToogleWindowCallback(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
+{
+	return pIvy->ToogleWindowCallback(cmd,phase,refcon);
+}
+
+void WrapKeyCallback(XPLMWindowID inWindowID, char inKey, XPLMKeyFlags inFlags, char inVirtualKey, void * inRefcon, int losingFocus)
+{
+	return pIvy->KeyCallback(inWindowID,inKey,inFlags,inVirtualKey,inRefcon,losingFocus);
+}
+int WrapMouseClickCallback(XPLMWindowID inWindowID, int x, int y, XPLMMouseStatus inMouse, void * inRefcon)
+{
+	return pIvy->MouseClickCallback(inWindowID,x,y,inMouse,inRefcon);
+}
+
+PLUGIN_API float WrapIvyFlightLoopCallback(float elapsedMe, float elapsedSim, int counter, void * refcon)
+{
+	return pIvy->IvyFlightLoopCallback(elapsedMe,elapsedSim,counter,refcon);
 }
