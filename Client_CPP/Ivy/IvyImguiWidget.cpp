@@ -26,7 +26,7 @@ IvyImguiWidget::~IvyImguiWidget()
 
 void IvyImguiWidget::configureImguiContext()
 {
-	ImGuiIO& io = ImGui::GetIO();
+	/*ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->AddFontDefault();
 	font2 = io.Fonts->AddFontFromFileTTF("./Resources/fonts/DejaVuSans.ttf", 8.0f);
 	font3 = io.Fonts->AddFontFromFileTTF("./Resources/fonts/DejaVuSans.ttf", 10.0f);
@@ -36,7 +36,7 @@ void IvyImguiWidget::configureImguiContext()
 	font7 = io.Fonts->AddFontFromFileTTF("./Resources/fonts/DejaVuSansMono.ttf", 18.0f);
 	font8 = io.Fonts->AddFontFromFileTTF("./Resources/fonts/Inconsolata.ttf", 8.0f);
 	font9 = io.Fonts->AddFontFromFileTTF("./Resources/fonts/Inconsolata.ttf", 22.0f);
-	font10 = io.Fonts->AddFontFromFileTTF("./Resources/fonts/Inconsolata.ttf", 24.0f);
+	font10 = io.Fonts->AddFontFromFileTTF("./Resources/fonts/Inconsolata.ttf", 24.0f);*/
 
 }
 
@@ -396,7 +396,8 @@ void IvyImguiWidget::buildInterface()
 
 		ImGui::NextColumn();
 
-		ImGui::Checkbox("Enable Ivy", &(pIvy->m_ivyConfig->m_ivy_enable));
+		if (ImGui::Checkbox("Enable Ivy", &(pIvy->m_ivyConfig->m_ivy_enable))) pIvy->MenuCheck();
+		if (ImGui::Checkbox("Enable Log", &(pIvy->m_ivyConfig->m_log_enable))) pIvy->MenuCheck();
 		ImGui::Checkbox("Enable Callouts", &(pIvy->m_ivyConfig->m_callouts_enable));
 		ImGui::Checkbox("Enable Errors", &(pIvy->m_ivyConfig->m_errors_enable));
 		ImGui::Checkbox("Enable Pre-Warnings", &(pIvy->m_ivyConfig->m_pre_warnings));

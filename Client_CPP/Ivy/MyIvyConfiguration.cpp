@@ -74,6 +74,7 @@ void MyIvyConfiguration::WriteConfig()
 	pt.put("IVY_SETTINGS.mp3_dir", m_mp3_dir);
 
 	pt.put("IVY_SETTINGS.ivy_enable", m_ivy_enable);
+	pt.put("IVY_SETTINGS.log_enable", m_log_enable);
 	pt.put("IVY_SETTINGS.callouts_enable", m_callouts_enable);
 	pt.put("IVY_SETTINGS.errors_enable", m_errors_enable);
 	pt.put("IVY_SETTINGS.baro_is_error", m_baro_is_error);
@@ -166,6 +167,10 @@ void MyIvyConfiguration::ReadConfig()
 
 	try { m_ivy_enable = pt.get<bool>("IVY_SETTINGS.ivy_enable"); }
 	catch (...) { IvyDebugString("IvyConfiguration: Entry not found.\n"); }
+
+	try { m_log_enable = pt.get<bool>("IVY_SETTINGS.log_enable"); }
+	catch (...) { IvyDebugString("IvyConfiguration: Entry not found.\n"); }
+
 	try { m_callouts_enable = pt.get<bool>("IVY_SETTINGS.callouts_enable"); }
 	catch (...) { IvyDebugString("IvyConfiguration: Entry not found.\n"); }
 	try { m_errors_enable = pt.get<bool>("IVY_SETTINGS.errors_enable"); }

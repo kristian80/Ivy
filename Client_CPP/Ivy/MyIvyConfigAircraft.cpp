@@ -134,6 +134,7 @@ float MyIvyConfigAircraft::GetSingleDataref(XPLMDataRef x_dataref, XPLMDataTypeI
 		XPLMGetDatavi(x_dataref, v_array, 0, 100);
 		return v_array[array_pos];
 	}
+	return 0;
 }
 
 void MyIvyConfigAircraft::UpdateData()

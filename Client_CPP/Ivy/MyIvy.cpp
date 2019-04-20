@@ -205,13 +205,15 @@ void MyIvy::IvyStart()
 	ivy_output_file.flush();
 
 	// Menu;
-	m_IvyMenu = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "Ivy", 0, 1);
-	m_MenuId = XPLMCreateMenu("Ivy", XPLMFindPluginsMenu(), m_IvyMenu, WrapIvyMenuHandler, 0);
+	m_IvyMenu = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "Nagging Copilot", 0, 1);
+	m_MenuId = XPLMCreateMenu("Nagging Copilot", XPLMFindPluginsMenu(), m_IvyMenu, WrapIvyMenuHandler, 0);
 	XPLMAppendMenuItem(m_MenuId, "Toggle Control Window", "Item1", 1);
 	XPLMAppendMenuItem(m_MenuId, "Make Announcement", "Item3", 1);
 	XPLMAppendMenuItem(m_MenuId, "Barometric Pressure", "Item4", 1);
 	XPLMAppendMenuItem(m_MenuId, "Wind Situtation", "Item5", 1);
-	XPLMAppendMenuItem(m_MenuId, "Reset Ivy", "Item7", 1);
+	XPLMAppendMenuItem(m_MenuId, "Reset Copilot", "Item7", 1);
+	m_menuindex_ivy_enable = XPLMAppendMenuItem(m_MenuId, "Copilot Enable", "Item8", 1);
+	m_menuindex_log_enable = XPLMAppendMenuItem(m_MenuId, "Logging Enable", "Item9", 1);
 
 	// Flag to tell us if theLogbook is shown;
 	m_MenuLogbookShow = 0;
@@ -275,6 +277,8 @@ void MyIvy::IvyStart()
 	ivy_output_file.flush();
 	
 	ReadErrorLog();
+
+	MenuCheck();
 	
 	ivy_output_file << "Init Finished" << std::endl;
 	ivy_output_file.flush();
@@ -1076,6 +1080,16 @@ void MyIvy::IvyMenuHandler(void * in_menu_ref, void * inItemRef)
 		ToogleWindowCallback(0, 0, 0);*/
 	else if (strcmp((char *)inItemRef, "Item7") == NULL)
 		ResetIvyCallback(0, 0, 0);
+	else if (strcmp((char *)inItemRef, "Item8") == NULL)
+	{
+		m_ivyConfig->m_ivy_enable = !m_ivyConfig->m_ivy_enable;
+		MenuCheck();
+	}
+	else if (strcmp((char *)inItemRef, "Item9") == NULL)
+	{
+		m_ivyConfig->m_log_enable = !m_ivyConfig->m_log_enable;
+		MenuCheck();
+	}
 }
 
 int MyIvy::SayBaroCallback(XPLMCommandRef cmd, XPLMCommandPhase phase, void * refcon)
@@ -1139,6 +1153,8 @@ int MyIvy::MouseClickCallback(XPLMWindowID inWindowID, int x, int y, XPLMMouseSt
 
 void MyIvy::SayBaro()
 {
+	if (m_ivyConfig->m_ivy_enable == false) return;
+
 	ivy_output_file << "SayBaro" << std::endl;
 	ivy_output_file.flush();
 
@@ -1148,6 +1164,8 @@ void MyIvy::SayBaro()
 
 void MyIvy::SayWind()
 {
+	if (m_ivyConfig->m_ivy_enable == false) return;
+
 	ivy_output_file << "SayWind" << std::endl;
 	ivy_output_file.flush();
 
@@ -1158,8 +1176,18 @@ void MyIvy::SayWind()
 	m_play_mp3_queue->push(m_s_knots);
 }
 
+void MyIvy::MenuCheck()
+{
+	XPLMMenuCheck m_check = m_ivyConfig->m_ivy_enable == true ? xplm_Menu_Checked : xplm_Menu_NoCheck;
+	XPLMCheckMenuItem(m_MenuId, m_menuindex_ivy_enable, m_check);
+
+	m_check = m_ivyConfig->m_log_enable == true ? xplm_Menu_Checked : xplm_Menu_NoCheck;
+	XPLMCheckMenuItem(m_MenuId, m_menuindex_log_enable, m_check);
+}
+
 void MyIvy::BoardingCompleted()
 {
+	if (m_ivyConfig->m_ivy_enable == false) return;
 	if (m_ivyConfig->m_callouts_enable == false) return;
 
 	m_play_mp3_queue->push(m_s_fse_start1);
@@ -1188,6 +1216,8 @@ void MyIvy::BoardingCompleted()
 
 void MyIvy::SpellOutDigits(int spell_number)
 {
+	if (m_ivyConfig->m_ivy_enable == false) return;
+
 	ivy_output_file << "SpellOutDigits" << spell_number << std::endl;
 	ivy_output_file.flush();
 
@@ -1210,6 +1240,7 @@ void MyIvy::SpellOutDigits(int spell_number)
 
 void MyIvy::SayNumber(int spell_number)
 {
+	if (m_ivyConfig->m_ivy_enable == false) return;
 
 	ivy_output_file << "SpellOutNumber" << spell_number << std::endl;
 	ivy_output_file.flush();
@@ -1423,7 +1454,7 @@ void MyIvy::EndOfFlightEvaluation()
 	m_airport_arrival = airport_name;
 
 	// Do not write in replay mode;
-	if (m_li_replay == 0)
+	if ((m_li_replay == 0) && (m_ivyConfig->m_log_enable == true))
 	{
 		std::ofstream  logbook_file;
 		logbook_file.open(m_ivyConfig->m_logbook_path, std::ofstream::out | std::ofstream::app);
@@ -2326,7 +2357,8 @@ void MyIvy::WriteErrorLog()
 		}
 	}
 
-	boost::property_tree::write_xml(m_ivyConfig->m_errorlog_path, pt);
+	boost::property_tree::xml_writer_settings<char> settings(' ', 4);
+	boost::property_tree::write_xml(m_ivyConfig->m_errorlog_path, pt, std::locale(), settings);
 
 	CalculateStatistics();
 

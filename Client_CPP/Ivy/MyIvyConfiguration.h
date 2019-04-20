@@ -29,6 +29,7 @@ public:
 	std::vector<std::string> m_audio_dirs;
 
 	bool m_ivy_enable = true;
+	bool m_log_enable = true;
 
 	bool m_callouts_enable = true;
 	bool m_errors_enable = true;

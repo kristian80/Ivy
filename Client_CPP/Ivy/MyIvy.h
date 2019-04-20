@@ -89,6 +89,9 @@ public:
 	int m_draw_window = 0;
 	int m_MenuVSpeedsShow = 0;
 
+	int m_menuindex_ivy_enable = 0;
+	int m_menuindex_log_enable = 0;
+
 	float m_time = 0;
 	int m_landing_detected = 0;
 	int m_landing_rated = 0;
@@ -688,6 +691,7 @@ public:
 
 	void SayBaro();
 	void SayWind();
+	void MenuCheck();
 	void SpellOutDigits(int spell_number);
 	void SayNumber(int spell_number);
 	void CheckAnnouncement();
