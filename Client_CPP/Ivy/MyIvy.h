@@ -170,6 +170,7 @@ public:
 
 	std::vector<ALuint> m_s_low;
 	std::vector<ALuint> m_s_hundreds;
+	std::vector<ALuint> m_s_hrm;
 
 	ALuint m_s_million = 0;
 	ALuint m_s_thousand = 0;

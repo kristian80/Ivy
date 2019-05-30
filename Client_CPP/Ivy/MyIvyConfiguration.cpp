@@ -155,6 +155,9 @@ void MyIvyConfiguration::WriteConfig()
 	pt.put("IVY_SETTINGS.aoc_level_med", m_aoc_level_med);
 	pt.put("IVY_SETTINGS.aoc_level_low", m_aoc_level_low);
 
+	pt.put("IVY_SETTINGS.hrm_enabled", m_hrm_enabled);
+	
+
 
 	write_ini(m_ini_path, pt);
 }
@@ -317,6 +320,9 @@ void MyIvyConfiguration::ReadConfig()
 	try { m_aoc_level_med = pt.get<int>("IVY_SETTINGS.aoc_level_med"); }
 	catch (...) { IvyDebugString("IvyConfiguration: Entry not found.\n"); }
 	try { m_aoc_level_low = pt.get<int>("IVY_SETTINGS.aoc_level_low"); }
+	catch (...) { IvyDebugString("IvyConfiguration: Entry not found.\n"); }
+
+	try { m_hrm_enabled = pt.get<bool>("IVY_SETTINGS.hrm_enabled"); }
 	catch (...) { IvyDebugString("IvyConfiguration: Entry not found.\n"); }
 
 	SetAudioDirectory();

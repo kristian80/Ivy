@@ -473,12 +473,20 @@ void MyIvy::IvyLoadSoundFiles(bool reload)
 
 	m_s_low.clear();
 	m_s_hundreds.clear();
+	m_s_hrm.clear();
 
 	for (int index = 0; index < 100; index++)
 		m_s_low.push_back(IvyLoadSingleSoundFile(std::to_string(index), true));
 
 	for (int index = 0; index < 1000; index+=100)
 		m_s_hundreds.push_back(IvyLoadSingleSoundFile(std::to_string(index), true));
+
+	for (int index = 0; index < 100; index++)
+	{
+		std::string mp3_name = "hrm_";
+		mp3_name += std::to_string(index);
+		m_s_hrm.push_back(IvyLoadSingleSoundFile(mp3_name, false));
+	}
 
 	m_s_million = IvyLoadSingleSoundFile("1000000", true);
 	m_s_thousand = IvyLoadSingleSoundFile("1000", true);
@@ -1000,6 +1008,27 @@ void MyIvy::IvyReceiveMessage(XPLMPluginID inFromWho, int inMessage, void * inPa
 		if (inMessage == XPLM_MSG_SCENERY_LOADED)
 		{
 			
+
+		}
+	}
+	else
+	{
+		if (inMessage == HRM_MESSAGE_SOUND_1)
+		{
+			HRM_Sound *p_hrm_sound = (HRM_Sound *) inParam;
+
+			if (m_ivyConfig->m_hrm_enabled == true)
+			{
+
+				if ((p_hrm_sound->sound_before > 0) && (p_hrm_sound->sound_before < m_s_hrm.size()))
+					m_play_mp3_queue->push(m_s_hrm[p_hrm_sound->sound_before]);
+
+				if (p_hrm_sound->say_value > 0) SayNumber(p_hrm_sound->say_value);
+
+				if ((p_hrm_sound->sound_after > 0) && (p_hrm_sound->sound_after < m_s_hrm.size()))
+					m_play_mp3_queue->push(m_s_hrm[p_hrm_sound->sound_after]);
+			}
+
 
 		}
 	}

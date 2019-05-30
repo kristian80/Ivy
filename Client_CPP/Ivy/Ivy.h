@@ -70,7 +70,15 @@
 #define MAX_GRAPH_DATA 1000
 #define MAX_GRAPH_TIME 100
 
+#define HRM_MESSAGE_SOUND_1 0x85747400
 
+
+struct HRM_Sound
+{
+	int sound_before = -1;
+	int say_value = -1;
+	int sound_after = -1;
+};
 
 class MyIvy;
 extern MyIvy * pIvy;

@@ -124,6 +124,8 @@ public:
 	int m_aoc_level_med = 7;
 	int m_aoc_level_low = 3;
 
+	bool m_hrm_enabled = true;
+
 	MyIvyConfiguration();
 	~MyIvyConfiguration();
 
